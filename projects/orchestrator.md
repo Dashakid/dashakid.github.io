@@ -220,4 +220,9 @@ It's a **complete data product** - from raw API data to actionable intelligence.
 
 ---
 
+[← Back to Portfolio](../index.html)
+
+# 🎯 Eco-Logistics Travel Friction Index System
+
+---
 *Last Updated: April 2026*
