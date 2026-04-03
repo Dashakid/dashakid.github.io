@@ -42,11 +42,41 @@ Custom algorithm that synthesizes:
 **Result:** Single 0-100 risk score enabling quick operational decisions
 
 ### 2. **Multi-City Comparison**
-Analyze and compare travel conditions across multiple cities simultaneously:
-- Side-by-side friction score comparison
-- Relative risk assessment
-- Exchange rate impact analysis
-- Weather pattern correlation
+Analyze and compare travel conditions across multiple cities side-by-side.
+
+**How It Works:**
+
+For each city in the comparison set, the system:
+1. Runs full orchestration (geocoding, weather, flights, exchange rate)
+2. Calculates friction index using this formula:
+
+```
+Friction Score = (Wind Speed / 50) × 25 
+               + (Precipitation / 100) × 15 
+               + (Flight Velocity / 500) × 30 
+               + (Exchange Rate / 3.0) × 30
+Clamped to 0-100 range
+```
+
+3. Assigns risk level: 🟢 LOW (0-24) | 🟡 MEDIUM (25-49) | 🟠 HIGH (50-74) | 🔴 CRITICAL (75-100)
+
+**Comparison Method:**
+
+Cities are ranked purely by their **Friction Score**—a simple numerical comparison. Lower scores indicate fewer operational constraints. Example output:
+
+```
+City      Friction Score  Wind (km/h)  Temp (°C)  Exchange Rate
+London           42.3         8.5        12.1        0.85
+Paris            38.9         7.2        13.8        0.92
+Tokyo            56.7        15.3         8.4      110.2
+```
+
+**Why It Matters:**
+- **Paris (38.9)** is the best hub choice (lowest friction)
+- **London (42.3)** is slightly constrained but viable
+- **Tokyo (56.7)** faces weather headwinds and higher operational friction
+
+Perfect for rapid hub selection, country expansion analysis, or quarterly risk reviews.
 
 ### 3. **Interactive Data Analysis**
 Jupyter notebooks with:
