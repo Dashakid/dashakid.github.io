@@ -1,39 +1,46 @@
-# 🌐 Gian-Carlo Javier | Portfolio Website
+# 🌐 Gian-Carlo Javier | Portfolio Source
 ### AI Automation Engineer & Junior Data Scientist 
 
-This repository contains the source code and deployment for my professional portfolio website, hosted via GitHub Pages. It serves as a central hub for my machine learning projects, automated AI solutions, and technical blog.
+This repository contains the source code for my professional portfolio, hosted via GitHub Pages. Unlike standard template-based portfolios, this site is a custom-coded frontend designed to showcase high-performance ML pipelines and AI automation tools.
 
 ---
 
-### 🚀 Live Demo
-**[Visit Website →](https://dashakid.github.io)**
+### 🚀 Live Site
+**[https://dashakid.github.io/](https://dashakid.github.io/)**
 
 ---
 
-### 🛠 Built With
-* **Frontend:** HTML5, CSS3 (Custom Styling)
-* **Logic:** JavaScript / Streamlit (Embedded demos)
-* **Deployment:** GitHub Pages
-* **Domain:** `dashakid.github.io`
+### 🛠 Tech Stack & Architecture
+* **Frontend:** Custom HTML5 & CSS3 (Modern Dark Mode UI)
+* **Deployment:** GitHub Pages (Automated CI/CD via GitHub Actions)
+* **Design Philosophy:** Focus on clean "Project Cards" and direct links to code repositories to reduce recruiter friction.
 
 ---
 
 ### 📂 Repository Structure
-* `/assets` — CSS, images, and branding assets.
-* `/projects` — Individual project documentation and links.
-* `index.html` — Main landing page.
+* `index.html` — The core logic and structure of the portfolio.
+* `me.jpg` — Professional headshot used in the hero section.
+* `assets/` — (Optional) Directory for additional CSS, JS, or image assets.
 
 ---
 
-### 🔧 Key Projects Featured
-* **CoKeeper:** AI-powered accounting automation for QuickBooks/Xero.
-* **Crypto Trading Bot:** FastAPI backend with PostgreSQL integration.
-* **Interactive UI:** Custom-styled Streamlit applications for data visualization.
+### 🔧 Featured Engineering Projects
+1.  **CoKeeper:** AI-driven accounting automation (Python, CatBoost, FastAPI).
+2.  **Crypto Trading Bot:** High-frequency execution engine (PostgreSQL, FastAPI).
+3.  **Interactive UI:** Advanced Streamlit applications with complex state management.
 
 ---
 
-### 🛠 How to Run Locally
-If you'd like to preview the site on your local machine:
-1. Clone the repository:
-   ```bash
-   git clone [https://github.com/Dashakid/dashakid.github.io.git](https://github.com/Dashakid/dashakid.github.io.git)
+### 🛠 Local Development
+To mirror this project or run it locally:
+1.  Clone the repo:
+    ```bash
+    git clone [https://github.com/Dashakid/dashakid.github.io.git](https://github.com/Dashakid/dashakid.github.io.git)
+    ```
+2.  Open `index.html` in any modern web browser.
+
+---
+
+### 📫 Contact
+* **LinkedIn:** [linkedin.com/in/giancarlojavier](https://linkedin.com/in/giancarlojavier)
+* **GitHub:** [@Dashakid](https://github.com/Dashakid)
