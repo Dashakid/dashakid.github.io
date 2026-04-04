@@ -4,43 +4,99 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gian-Carlo Javier | AI Automation Engineer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #ec4899; --secondary: #a855f7; --bg: #0f172a; --card-bg: #1e293b; --text: #f8fafc; --text-dim: #94a3b8; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; flex-direction: column; align-items: center; }
+        :root { 
+            --primary: #ff479c; /* Sharp Pink Neon */
+            --secondary: #9d50bb; 
+            --bg: #0b0f1a; 
+            --card-bg: rgba(30, 41, 59, 0.5); 
+            --text: #f8fafc; 
+            --text-dim: #94a3b8; 
+            --glow: 0 0 15px rgba(255, 71, 156, 0.4);
+        }
         
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: var(--bg); 
+            color: var(--text); 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            background-image: radial-gradient(circle at 50% -20%, #1e293b 0%, #0b0f1a 80%);
+        }
+
         /* Hero Section */
-        header { width: 100%; padding: 5rem 1rem; text-align: center; background: radial-gradient(circle at top, #1e293b 0%, #0f172a 100%); }
-        .profile-pic { width: 150px; height: 150px; border-radius: 50%; border: 4px solid var(--primary); object-fit: cover; margin-bottom: 1.5rem; box-shadow: 0 0 20px rgba(236, 72, 153, 0.3); }
-        h1 { font-size: 3rem; margin: 0; font-weight: 800; }
-        .tagline { color: var(--primary); font-size: 1.2rem; font-weight: 600; margin-top: 5px; }
-        .bio-text { color: var(--text-dim); max-width: 600px; margin: 1.5rem auto; font-size: 1.1rem; line-height: 1.6; }
+        header { width: 100%; padding: 6rem 1rem; text-align: center; }
+        .profile-pic { 
+            width: 140px; height: 140px; border-radius: 50%; 
+            border: 2px solid var(--primary); 
+            object-fit: cover; margin-bottom: 1.5rem; 
+            box-shadow: var(--glow);
+            filter: grayscale(20%);
+        }
+        h1 { font-size: 3.5rem; margin: 0; font-weight: 800; letter-spacing: -1px; }
+        .tagline { 
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--primary); 
+            font-size: 1rem; 
+            margin-top: 10px; 
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .bio-text { color: var(--text-dim); max-width: 550px; margin: 1.5rem auto; font-size: 1.05rem; line-height: 1.7; }
 
         /* Dashboard Container */
-        .container { max-width: 1100px; width: 90%; padding: 4rem 0; }
-        
-        h2 { font-size: 1.8rem; margin-bottom: 2.5rem; color: #fff; border-left: 4px solid var(--primary); padding-left: 15px; }
+        .container { max-width: 1100px; width: 90%; padding: 2rem 0; }
+        h2 { 
+            font-size: 1.2rem; margin-bottom: 2rem; color: var(--text-dim); 
+            text-transform: uppercase; letter-spacing: 3px;
+            display: flex; align-items: center;
+        }
+        h2::after { content: ""; flex: 1; height: 1px; background: #334155; margin-left: 20px; }
 
-        /* Skills Grid */
-        .skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; margin-bottom: 5rem; }
-        .skill-badge { background: #334155; color: #fff; padding: 10px 15px; border-radius: 12px; font-size: 0.95rem; font-weight: 600; text-align: center; border: 1px solid transparent; }
-        .skill-badge:hover { border-color: var(--secondary); color: var(--primary); }
+        /* Tech Stack */
+        .skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; margin-bottom: 5rem; }
+        .skill-badge { 
+            background: #161e2d; color: var(--text-dim); padding: 8px 12px; 
+            border-radius: 8px; font-size: 0.85rem; font-family: 'JetBrains Mono', monospace;
+            text-align: center; border: 1px solid #2d3748; transition: 0.2s;
+        }
+        .skill-badge:hover { border-color: var(--primary); color: #fff; box-shadow: var(--glow); }
 
         /* Project Grid */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2.5rem; margin-bottom: 5rem; }
-        .card { background: var(--card-bg); border: 1px solid #334155; border-radius: 24px; padding: 2.5rem; transition: 0.3s; display: flex; flex-direction: column; }
-        .card:hover { transform: translateY(-8px); border-color: var(--primary); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); }
-        .card-title { margin-top: 0; font-size: 1.5rem; font-weight: 700; color: #fff; }
-        .card-text { color: var(--text-dim); flex-grow: 1; margin-bottom: 1.5rem; line-height: 1.5; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 2rem; margin-bottom: 5rem; }
+        .card { 
+            background: var(--card-bg); 
+            border: 1px solid #334155; 
+            border-radius: 20px; padding: 2rem; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            display: flex; flex-direction: column;
+            backdrop-filter: blur(10px);
+        }
+        .card:hover { 
+            transform: translateY(-10px); 
+            border-color: var(--primary); 
+            background: rgba(30, 41, 59, 0.8);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+        .card-title { margin-top: 0; font-size: 1.4rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 10px; }
+        .card-text { color: var(--text-dim); flex-grow: 1; margin-bottom: 1.5rem; line-height: 1.6; font-size: 0.95rem; }
 
         .tag-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.5rem; }
-        .tag { background: rgba(236, 72, 153, 0.1); color: var(--primary); padding: 5px 12px; border-radius: 99px; font-size: 0.75rem; font-weight: bold; }
+        .tag { background: rgba(157, 80, 187, 0.1); color: var(--secondary); padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; border: 1px solid rgba(157, 80, 187, 0.2); }
         
-        .btn { display: inline-block; background: var(--primary); color: white; padding: 0.8rem 1.8rem; border-radius: 12px; text-decoration: none; font-weight: 600; text-align: center; transition: 0.2s; }
-        .btn:hover { opacity: 0.85; transform: scale(1.04); }
+        .btn { 
+            display: inline-block; background: transparent; color: #fff; 
+            padding: 0.7rem 1.5rem; border-radius: 10px; text-decoration: none; 
+            font-weight: 600; text-align: center; transition: 0.3s; 
+            border: 1px solid var(--primary);
+        }
+        .btn:hover { background: var(--primary); box-shadow: var(--glow); }
 
-        footer { padding: 4rem; text-align: center; color: var(--text-dim); border-top: 1px solid #334155; width: 100%; }
-        .contact-link { color: var(--text); text-decoration: none; font-weight: bold; margin: 0 10px; }
+        footer { padding: 4rem; text-align: center; color: var(--text-dim); border-top: 1px solid #1e293b; width: 100%; font-size: 0.9rem; }
+        .contact-link { color: var(--text-dim); text-decoration: none; margin: 0 15px; transition: 0.2s; }
         .contact-link:hover { color: var(--primary); }
     </style>
 </head>
@@ -48,67 +104,63 @@
     <header>
         <img src="me.jpg" alt="Gian-Carlo Javier" class="profile-pic">
         <h1>Gian-Carlo Javier</h1>
-        <div class="tagline">AI Automation Engineer & Data Scientist</div>
+        <div class="tagline">AI Automation & Data Science</div>
         <p class="bio-text">
-            Engineering high-performance ML pipelines, custom AI Orchestrators, and automated financial workflows. Remote 💻
+            Building production-grade ML pipelines and agentic orchestrators. Currently focused on financial automation and risk-aware execution systems.
         </p>
     </header>
 
     <div class="container">
-        <h2>🛠 Tech Stack</h2>
+        <h2>System_Stack</h2>
         <div class="skills-grid">
             <div class="skill-badge">Python</div>
             <div class="skill-badge">FastAPI</div>
-            <div class="skill-badge">CatBoost</div>
-            <div class="skill-badge">Docker</div>
+            <div class="skill-badge">LangGraph</div>
             <div class="skill-badge">PostgreSQL</div>
+            <div class="skill-badge">Redis</div>
+            <div class="skill-badge">Docker</div>
+            <div class="skill-badge">CatBoost</div>
             <div class="skill-badge">Asyncio</div>
-            <div class="skill-badge">Streamlit</div>
-            <div class="skill-badge">Scikit-Learn</div>
         </div>
 
-        <h2>🚀 Featured Projects</h2>
+        <h2>Active_Projects</h2>
         <div class="grid">
             <div class="card">
-                <div class="card-title">🧠 AI Orchestrator</div>
-                <p class="card-text">Middleware layer for multi-model AI workflows, managing task distribution and persistent states.</p>
+                <div class="card-title">⚡ AI Orchestrator</div>
+                <p class="card-text">Middleware for multi-model workflows. Features persistent state management and intelligent task routing via asynchronous pipelines.</p>
                 <div class="tag-group">
-                    <span class="tag">FastAPI</span><span class="tag">Asyncio</span><span class="tag">Redis</span>
+                    <span class="tag">FASTAPI</span><span class="tag">REDIS</span><span class="tag">CLAUDE-3.5</span>
                 </div>
-                <a href="projects/orchestrator" class="btn">View Architecture</a>
+                <a href="projects/orchestrator" class="btn">View Logic</a>
             </div>
             
             <div class="card">
-                <div class="card-title">🤖 CoKeeper AI</div>
-                <p class="card-text">Custom ML models to automate data categorization and financial exports for QuickBooks/Xero.</p>
+                <div class="card-title">🛡️ Trading Bot</div>
+                <p class="card-text">High-performance engine featuring a hard-coded 'Paper Guard' safety layer and Redis-backed circuit breakers for exchange stability.</p>
                 <div class="tag-group">
-                    <span class="tag">CatBoost</span><span class="tag">Python</span><span class="tag">Docker</span>
+                    <span class="tag">LANGGRAPH</span><span class="tag">POSTGRES</span><span class="tag">SAFETY-FIRST</span>
+                </div>
+                <a href="projects/trading-bot" class="btn">View Architecture</a>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">📊 CoKeeper AI</div>
+                <p class="card-text">Dual-model ML architecture for financial categorization. Automates QuickBooks exports with a 5-level vendor verification cascade.</p>
+                <div class="tag-group">
+                    <span class="tag">CATBOOST</span><span class="tag">SCIKIT-LEARN</span><span class="tag">DOCKER</span>
                 </div>
                 <a href="projects/cokeeper" class="btn">View Pipeline</a>
             </div>
-            
-            <div class="card">
-                <div class="card-title">📈 Trading Bot</div>
-                <p class="card-text">High-performance engine with persistent tracking for real-time stock markets.</p>
-                <div class="tag-group">
-                    <span class="tag">PostgreSQL</span><span class="tag">FastAPI</span><span class="tag">Python</span>
-                </div>
-                <a href="projects/trading-bot" class="btn">View Logic</a>
-            </div>
         </div>
     </div>
-<footer>
-        <p>Let's build something efficient.</p>
+
+    <footer>
+        <p>Built for efficiency. Hosted in Bali 🌴</p>
         <div>
-            <a href="https://linkedin.com/in/gian-carlo-javier-b0b86b16b" 
-               class="contact-link" 
-               target="_blank" 
-               rel="noopener">LinkedIn</a>
-            
-            <a href="https://github.com/Dashakid" 
-               class="contact-link" 
-               target="_blank" 
-               rel="noopener">GitHub</a>
+            <a href="https://www.linkedin.com/in/gian-carlo-javier-b0b86b16b" class="contact-link">LinkedIn</a>
+            <a href="https://github.com/Dashakid" class="contact-link">GitHub</a>
         </div>
-        <p style="font-size: 0.8rem; margin-top: 2rem;">&copy; 2026 Gian-Carlo Javier</p>
+        <p style="opacity: 0.5; margin-top: 2rem;">&copy; 2026 Gian-Carlo Javier</p>
     </footer>
+</body>
+</html>
