@@ -1,4 +1,3 @@
-
 ---
 layout: default
 title: CoKeeper AI Architecture
@@ -29,10 +28,20 @@ CoKeeper doesn't just categorize; it assesses its own certainty. By outputting p
 
 ---
 
+## 🖥️ Production Interface
+The final output is an interactive **Streamlit Dashboard** where users manage the ML-driven categorization results.
+
+<div align="center">
+  <img src="../Cokeeper-ui.png" alt="CoKeeper Dashboard UI" width="800" style="border-radius: 12px; border: 1px solid #334155; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin: 20px 0;">
+  <p style="color: #94a3b8; font-size: 0.9rem; font-family: 'JetBrains Mono', monospace;">
+    // Live_Environment_Preview // UI_Confidence_Tiers_Enabled
+  </p>
+</div>
+
+---
+
 ## 🏗 System Architecture
 The system is built as a modular, serverless pipeline deployed on **GCP Cloud Run**.
-
-
 
 ### 1. Vendor Intelligence (5-Level Cascade)
 A custom feature engineering system that resolves messy bank descriptions into clean vendor identities:
@@ -49,25 +58,20 @@ Instead of a single classifier, CoKeeper routes data through two specialized **C
 
 ---
 
-## 🛠 Technical Stack
-* **ML / Data:** CatBoost, Scikit-learn, Pandas, NumPy.
-* **Backend:** FastAPI (Python 3.12) with Pydantic validation.
-* **Frontend:** Streamlit interactive dashboard.
-* **Infrastructure:** Terraform, Docker, GCP Cloud Run, Cloud SQL (PostgreSQL).
+## ⚙️ Logic Highlight: The Confidence Engine
+This snippet demonstrates how the system converts raw model probabilities into actionable business tiers.
 
----
-
-## 📊 Feature Engineering Highlights
-* **TF-IDF (1-2 grams):** Captures merchant names and memo patterns.
-* **TF-IDF (3-5 char grams):** Robustness against typos and unique bank abbreviations.
-* **Dimensionality Reduction:** SelectKBest (chi²) used to reduce 863 features down to the top 100 to prevent overfitting and ensure fast inference.
-
----
-
-## 🎓 Key Learnings
-* **Subpopulation Splitting:** Routing data into specialized models (Matched vs. Unmatched) significantly outperformed a single baseline model.
-* **Human-in-the-loop:** Confidence tiers are more valuable to users than raw accuracy metrics because they define a clear business workflow.
-* **Normalization is King:** Merchant name cleaning is the highest-leverage step in financial NLP.
-
----
-[← Back to Portfolio](../index.html)
+```python
+def get_confidence_tier(probabilities: list[float]) -> dict:
+    """
+    Categorizes the prediction based on the model's top-1 certainty.
+    Ensures 'Green' tier maintains near-perfect precision for auto-posting.
+    """
+    top_prob = max(probabilities)
+    
+    if top_prob >= 0.80:
+        return {"tier": "GREEN", "action": "AUTO_POST", "color": "#22c55e"}
+    elif top_prob >= 0.50:
+        return {"tier": "YELLOW", "action": "SPOT_CHECK", "color": "#eab308"}
+    else:
+        return {"tier": "RED", "action": "MANUAL_REVIEW", "color": "#ef4444"}
