@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { 
-            --primary: #ff479c; /* Sharp Pink Neon */
+            --primary: #ff479c;
             --secondary: #9d50bb; 
             --bg: #0b0f1a; 
             --card-bg: rgba(30, 41, 59, 0.5); 
@@ -27,7 +27,6 @@
             background-image: radial-gradient(circle at 50% -20%, #1e293b 0%, #0b0f1a 80%);
         }
 
-        /* Hero Section */
         header { width: 100%; padding: 6rem 1rem; text-align: center; }
         .profile-pic { 
             width: 140px; height: 140px; border-radius: 50%; 
@@ -47,7 +46,6 @@
         }
         .bio-text { color: var(--text-dim); max-width: 550px; margin: 1.5rem auto; font-size: 1.05rem; line-height: 1.7; }
 
-        /* Dashboard Container */
         .container { max-width: 1100px; width: 90%; padding: 2rem 0; }
         h2 { 
             font-size: 1.2rem; margin-bottom: 2rem; color: var(--text-dim); 
@@ -56,7 +54,6 @@
         }
         h2::after { content: ""; flex: 1; height: 1px; background: #334155; margin-left: 20px; }
 
-        /* Tech Stack */
         .skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; margin-bottom: 5rem; }
         .skill-badge { 
             background: #161e2d; color: var(--text-dim); padding: 8px 12px; 
@@ -65,7 +62,6 @@
         }
         .skill-badge:hover { border-color: var(--primary); color: #fff; box-shadow: var(--glow); }
 
-        /* Project Grid */
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 2rem; margin-bottom: 5rem; }
         .card { 
             background: var(--card-bg); 
@@ -95,6 +91,28 @@
         }
         .btn:hover { background: var(--primary); box-shadow: var(--glow); }
 
+        .live-badge {
+            display: inline-block;
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 0.65rem;
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 1px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+        .live-badge::before {
+            content: "● ";
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
         footer { padding: 4rem; text-align: center; color: var(--text-dim); border-top: 1px solid #1e293b; width: 100%; font-size: 0.9rem; }
         .contact-link { color: var(--text-dim); text-decoration: none; margin: 0 15px; transition: 0.2s; }
         .contact-link:hover { color: var(--primary); }
@@ -106,7 +124,7 @@
         <h1>Gian-Carlo Javier</h1>
         <div class="tagline">AI Automation & Data Science</div>
         <p class="bio-text">
-            Building production-grade ML pipelines and agentic orchestrators. Currently focused on financial automation and risk-aware execution systems.
+            Building production-grade ML pipelines and agentic orchestrators. Currently focused on financial automation, real-time data systems, and AI integrations. Based in Vietnam, relocating to Spain.
         </p>
     </header>
 
@@ -121,6 +139,10 @@
             <div class="skill-badge">Docker</div>
             <div class="skill-badge">CatBoost</div>
             <div class="skill-badge">Asyncio</div>
+            <div class="skill-badge">GCP</div>
+            <div class="skill-badge">AWS</div>
+            <div class="skill-badge">Claude API</div>
+            <div class="skill-badge">OpenAI API</div>
         </div>
 
         <h2>Active_Projects</h2>
@@ -135,28 +157,47 @@
             </div>
             
             <div class="card">
-                <div class="card-title">🛡️ Trading Bot</div>
-                <p class="card-text">High-performance engine featuring a hard-coded 'Paper Guard' safety layer and Redis-backed circuit breakers for exchange stability.</p>
+                <div class="card-title">🛡️ Trading Bot <span class="live-badge">LIVE</span></div>
+                <p class="card-text">High-performance engine featuring a hard-coded 'Paper Guard' safety layer and Redis-backed circuit breakers for exchange stability. Running in production since April 2026.</p>
                 <div class="tag-group">
-                    <span class="tag">LANGGRAPH</span><span class="tag">POSTGRES</span><span class="tag">SAFETY-FIRST</span>
+                    <span class="tag">LANGGRAPH</span><span class="tag">POSTGRES</span><span class="tag">SAFETY-FIRST</span><span class="tag">WEBSOCKET</span>
                 </div>
                 <a href="projects/trading-bot" class="btn">View Architecture</a>
             </div>
             
             <div class="card">
                 <div class="card-title">📊 CoKeeper AI</div>
-                <p class="card-text">Dual-model ML architecture for financial categorization. Automates QuickBooks exports with a 5-level vendor verification cascade.</p>
+                <p class="card-text">Dual-model ML architecture for financial categorization. Automates QuickBooks exports with a 5-level vendor verification cascade. 92.5% accuracy in production.</p>
                 <div class="tag-group">
-                    <span class="tag">CATBOOST</span><span class="tag">SCIKIT-LEARN</span><span class="tag">DOCKER</span>
+                    <span class="tag">CATBOOST</span><span class="tag">SCIKIT-LEARN</span><span class="tag">DOCKER</span><span class="tag">GCP</span>
                 </div>
                 <a href="projects/cokeeper" class="btn">View Pipeline</a>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📈 Stock Alert Bot <span class="live-badge">LIVE</span></div>
+                <p class="card-text">AI-powered Telegram bot that scans US stocks daily, detects fundamental catalysts, and delivers structured alerts with pros, cons, checklist, and AI-generated summaries.</p>
+                <div class="tag-group">
+                    <span class="tag">PYTHON</span><span class="tag">TELEGRAM</span><span class="tag">GEMINI</span><span class="tag">APSCHEDULER</span>
+                </div>
+                <a href="https://github.com/Dashakid" class="btn">View on GitHub</a>
+            </div>
+
+            <div class="card">
+                <div class="card-title">🎯 Polymarket Bot <span class="live-badge">LIVE</span></div>
+                <p class="card-text">Multi-strategy prediction market automation system. Ingests Kraken and Polymarket data, ranks top-wallet conviction signals, and executes via a risk gate stack with confidence thresholds and exposure caps.</p>
+                <div class="tag-group">
+                    <span class="tag">WEBSOCKET</span><span class="tag">REDIS</span><span class="tag">RISK-CONTROLS</span><span class="tag">CLOB</span>
+                </div>
+                <a href="https://github.com/Dashakid" class="btn">View on GitHub</a>
             </div>
         </div>
     </div>
 
     <footer>
-        <p>Built for efficiency. Hosted in Bali 🌴</p>
+        <p>Built for efficiency. Based in Vietnam 🌏 → Spain 🇪🇸</p>
         <div>
+            <a href="mailto:giancarlojavier@hey.com" class="contact-link">Email</a>
             <a href="https://www.linkedin.com/in/gian-carlo-javier-b0b86b16b" class="contact-link">LinkedIn</a>
             <a href="https://github.com/Dashakid" class="contact-link">GitHub</a>
         </div>
