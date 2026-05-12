@@ -15,7 +15,7 @@
             --text-dim: #94a3b8;
             --glow: 0 0 15px rgba(255, 71, 156, 0.4);
         }
-
+ 
         body {
             font-family: 'Inter', sans-serif;
             background: var(--bg);
@@ -24,9 +24,9 @@
             padding: 0;
             background-image: radial-gradient(circle at 50% -20%, #1e293b 0%, #0b0f1a 80%);
         }
-
+ 
         .page-wrap { max-width: 860px; margin: 0 auto; padding: 3rem 2rem 6rem; }
-
+ 
         .back-link {
             display: inline-block;
             font-family: 'JetBrains Mono', monospace;
@@ -37,7 +37,7 @@
             transition: color 0.2s;
         }
         .back-link:hover { color: var(--primary); }
-
+ 
         .author {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.8rem;
@@ -46,7 +46,7 @@
             letter-spacing: 2px;
             margin-bottom: 0.75rem;
         }
-
+ 
         h1 {
             font-size: 2.4rem;
             font-weight: 800;
@@ -54,14 +54,14 @@
             line-height: 1.2;
             letter-spacing: -0.5px;
         }
-
+ 
         .subtitle {
             color: var(--text-dim);
             font-size: 1.05rem;
             line-height: 1.7;
             margin-bottom: 2rem;
         }
-
+ 
         .impact-box {
             background: rgba(255, 71, 156, 0.07);
             border: 1px solid rgba(255, 71, 156, 0.25);
@@ -73,7 +73,7 @@
             line-height: 1.6;
         }
         .impact-box strong { color: var(--text); }
-
+ 
         .live-badge {
             display: inline-block;
             background: rgba(34, 197, 94, 0.1);
@@ -92,7 +92,7 @@
             animation: pulse 1.5s infinite;
         }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-
+ 
         h2 {
             font-size: 1.3rem;
             font-weight: 700;
@@ -102,9 +102,9 @@
             align-items: center;
             gap: 10px;
         }
-
+ 
         p { color: var(--text-dim); line-height: 1.75; font-size: 0.97rem; }
-
+ 
         table {
             width: 100%;
             border-collapse: collapse;
@@ -128,7 +128,7 @@
             color: var(--text-dim);
         }
         tr:hover td { background: rgba(30, 41, 59, 0.4); }
-
+ 
         .code-block {
             background: #0d1117;
             border: 1px solid #21262d;
@@ -149,7 +149,7 @@
         .str { color: #a5d6ff; }
         .cm { color: #8b949e; font-style: italic; }
         .num { color: #79c0ff; }
-
+ 
         .tag-group { display: flex; flex-wrap: wrap; gap: 8px; margin: 1rem 0 2rem; }
         .tag {
             background: rgba(157, 80, 187, 0.1);
@@ -160,16 +160,16 @@
             font-family: 'JetBrains Mono', monospace;
             border: 1px solid rgba(157, 80, 187, 0.2);
         }
-
+ 
         .section-divider {
             border: none;
             border-top: 1px solid #1e293b;
             margin: 3rem 0;
         }
-
+ 
         ul { color: var(--text-dim); line-height: 1.9; font-size: 0.97rem; padding-left: 1.4rem; }
         ul li { margin-bottom: 0.3rem; }
-
+ 
         .arch-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -195,7 +195,7 @@
             padding-left: 1.2rem;
             font-size: 0.85rem;
         }
-
+ 
         .comment-label {
             font-family: 'JetBrains Mono', monospace;
             font-size: 0.7rem;
@@ -208,19 +208,19 @@
 </head>
 <body>
 <div class="page-wrap">
-
+ 
     <a href="../../index.html" class="back-link">← Back to Portfolio</a>
-
+ 
     <div class="author">Gian-Carlo Javier</div>
     <h1>🎯 Polymarket Trading Bot <span class="live-badge">LIVE</span></h1>
     <p class="subtitle">
         A multi-strategy prediction market automation system that ingests real-time data from Kraken and Polymarket, ranks conviction signals from top wallets, and executes trades through a risk-gated CLOB execution layer.
     </p>
-
+ 
     <div class="impact-box">
         <strong>Impact:</strong> Fully automated prediction market execution — from raw signal ingestion to order posting — with hard risk controls at every layer. No manual intervention required during operation. Built to run continuously with resilient error handling and live Discord monitoring.
     </div>
-
+ 
     <div class="tag-group">
         <span class="tag">PYTHON</span>
         <span class="tag">WEBSOCKET</span>
@@ -231,21 +231,21 @@
         <span class="tag">CATBOOST</span>
         <span class="tag">DISCORD ALERTS</span>
     </div>
-
+ 
     <h2>🎯 The Problem</h2>
     <p>
         Prediction markets like Polymarket move fast. By the time a human identifies an arbitrage or mispriced market, top-wallet traders have already moved the odds. To compete, you need a system that processes signals in real time, evaluates conviction across multiple strategies simultaneously, and executes with risk controls that prevent runaway exposure.
     </p>
-
+ 
     <h2>🚀 The Solution: Multi-Strategy Signal Pipeline</h2>
     <p>
         The bot runs a full signal pipeline — from raw market data ingestion to trade execution — across multiple concurrent strategies. Each strategy evaluates independently, and a central risk gate decides whether to execute, reduce size, or block the order entirely.
     </p>
-
+ 
     <hr class="section-divider">
-
+ 
     <h2>🏗 System Architecture</h2>
-
+ 
     <div class="arch-grid">
         <div class="arch-card">
             <div class="arch-card-title">Market Inputs</div>
@@ -301,14 +301,14 @@
             </ul>
         </div>
     </div>
-
+ 
     <hr class="section-divider">
-
+ 
     <h2>⚙️ Logic Highlight: The Risk Gate</h2>
     <p>
         Every order passes through a multi-layer risk gate before execution. If any condition fails, the order is blocked and logged — the system never silently skips a check.
     </p>
-
+ 
     <div class="code-block">
         <pre><span class="kw">def</span> <span class="fn">risk_gate</span>(signal: <span class="fn">dict</span>, portfolio: <span class="fn">dict</span>) -> <span class="fn">dict</span>:
     <span class="cm">"""
@@ -319,25 +319,25 @@
     edge = signal[<span class="str">"edge"</span>]
     exposure = portfolio[<span class="str">"current_exposure"</span>]
     max_exposure = portfolio[<span class="str">"max_exposure_cap"</span>]
-
+ 
     <span class="kw">if</span> confidence < <span class="num">0.60</span>:
         <span class="kw">return</span> {<span class="str">"approved"</span>: <span class="num">False</span>, <span class="str">"reason"</span>: <span class="str">"LOW_CONFIDENCE"</span>}
-
+ 
     <span class="kw">if</span> edge < <span class="num">0.03</span>:
         <span class="kw">return</span> {<span class="str">"approved"</span>: <span class="num">False</span>, <span class="str">"reason"</span>: <span class="str">"INSUFFICIENT_EDGE"</span>}
-
+ 
     <span class="kw">if</span> exposure >= max_exposure:
         <span class="kw">return</span> {<span class="str">"approved"</span>: <span class="num">False</span>, <span class="str">"reason"</span>: <span class="str">"EXPOSURE_CAP_REACHED"</span>}
-
+ 
     size = <span class="fn">calculate_position_size</span>(confidence, edge, portfolio)
     <span class="kw">return</span> {<span class="str">"approved"</span>: <span class="num">True</span>, <span class="str">"size"</span>: size}</pre>
     </div>
     <div class="comment-label">// risk_gate.py — Pre-execution safety layer</div>
-
+ 
     <hr class="section-divider">
-
+ 
     <h2>📊 Strategy Types</h2>
-
+ 
     <table>
         <thead>
             <tr>
@@ -354,9 +354,9 @@
             <tr><td>Event Forecasting</td><td>Macro context + news</td><td>Probabilistic edge</td></tr>
         </tbody>
     </table>
-
+ 
     <hr class="section-divider">
-
+ 
     <h2>🚢 Deployment & Monitoring</h2>
     <ul>
         <li>Dockerized — fully containerized, single-command deploy</li>
@@ -366,7 +366,8 @@
         <li>Resilient error handling — per-strategy exceptions never crash the main loop</li>
         <li>Stateful retries on CLOB execution — handles partial fills and network drops</li>
     </ul>
-
+ 
 </div>
 </body>
 </html>
+ 
