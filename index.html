@@ -801,7 +801,7 @@ footer { padding: 2.4rem 0 3rem; border-top: 1px solid var(--hairline-soft); }
   <!-- ================= HERO ================= -->
   <header class="hero">
     <div class="hero-media" aria-hidden="true">
-      <video id="heroVideo" muted loop playsinline preload="none" poster="assets/videos/beach-poster.jpg"></video>
+      <video id="heroVideo" class="hero-video" autoplay muted loop playsinline preload="none" poster="beach-poster.jpg"></video>
     </div>
     <div class="wrap hero-inner">
     <div class="hero-kicker reveal">
@@ -1736,8 +1736,8 @@ footer { padding: 2.4rem 0 3rem; border-top: 1px solid var(--hairline-soft); }
 
     function attach() {
       var sources = [
-        { src: "assets/videos/beach-clip.webm", type: "video/webm" },
-        { src: "assets/videos/beach-clip.mp4", type: "video/mp4" }
+        { src: "beach-clip.webm", type: "video/webm" },
+        { src: "beach-clip.mp4", type: "video/mp4" }
       ];
       var failed = 0;
       sources.forEach(function (s) {
