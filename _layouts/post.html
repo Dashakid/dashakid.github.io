@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang }}">
+<head>
+{% include head.html %}
+<style>
+{% include site.css %}
+</style>
+</head>
+<body>
+<div class="progress" aria-hidden="true"></div>
+<div class="spotlight" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+{% include nav.html %}
+
+<main class="wrap article">
+  <a class="back" href="/#logs">All build logs</a>
+  {%- assign words = content | number_of_words %}
+  {%- assign mins = words | divided_by: 200 | at_least: 1 %}
+  <header class="art-head">
+    <div class="meta">
+      {%- if page.date %}<time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%b %-d, %Y" }}</time>{% endif %}
+      {%- if page.status %}<span{% if page.live %} class="live"{% endif %}>{{ page.status }}</span>{% endif %}
+      <span class="num">{{ mins }} min read</span>
+    </div>
+    <h1>{{ page.title }}</h1>
+    {%- if page.excerpt and page.date %}
+    <p class="lede">{{ page.excerpt | strip_html }}</p>
+    {%- endif %}
+    {%- if page.link %}
+    <a class="btn btn-ghost" href="{{ page.link }}">Open {{ page.link | remove: 'https://' | remove: 'http://' }}</a>
+    {%- endif %}
+  </header>
+
+  {%- if page.video %}
+  <figure class="art-media">
+    <video src="{{ page.video | relative_url }}" {% if page.image %}poster="{{ page.image | relative_url }}" {% endif %}autoplay muted loop playsinline aria-label="{{ page.video_alt | default: page.short | escape }}"></video>
+  </figure>
+  {%- elsif page.image %}
+  <figure class="art-media">
+    <img src="{{ page.image | relative_url }}" alt="{{ page.image_alt | default: page.short | escape }}" loading="lazy">
+  </figure>
+  {%- endif %}
+
+  {%- if page.specs %}
+  <div class="specs art-specs">
+    {%- for s in page.specs %}<div><span>{{ s[0] }}</span><b class="num">{{ s[1] }}</b></div>{% endfor %}
+  </div>
+  {%- endif %}
+
+  <div class="prose">
+{{ content }}
+  </div>
+
+  {%- if page.previous or page.next %}
+  <nav class="pager" aria-label="More build logs">
+    {%- if page.previous %}<a href="{{ page.previous.url | relative_url }}"><small>Older</small><b>{{ page.previous.short | default: page.previous.title }}</b></a>{% else %}<span></span>{% endif %}
+    {%- if page.next %}<a class="next" href="{{ page.next.url | relative_url }}"><small>Newer</small><b>{{ page.next.short | default: page.next.title }}</b></a>{% else %}<span></span>{% endif %}
+  </nav>
+  {%- endif %}
+
+  <section class="art-cta">
+    <span class="label">Work with me</span>
+    <h2>Need something like this?</h2>
+    <p>Tell me what you do by hand today. I'll reply within two working days with whether I can help and what I'd build first.</p>
+    <div class="hero-btns">
+      <a class="btn btn-primary" href="/#contact">Start a project</a>
+      <a class="btn btn-ghost" href="mailto:{{ site.author.email }}">Email me</a>
+    </div>
+    {% include newsletter.html id="post" %}
+  </section>
+</main>
+
+{% include footer.html %}
+<script>
+{% include page.js %}
+</script>
+</body>
+</html>

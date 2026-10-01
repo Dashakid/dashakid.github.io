@@ -1,0 +1,9 @@
+{%- if site.newsletter_action and site.newsletter_action != "" %}
+<form class="news" action="{{ site.newsletter_action }}" method="post" target="_blank">
+  <div>
+    <label for="news-email-{{ include.id | default: 'x' }}">Get new build logs by email</label>
+    <input id="news-email-{{ include.id | default: 'x' }}" type="email" name="email" autocomplete="email" required placeholder="you@example.com">
+  </div>
+  <button class="btn btn-primary" type="submit">Subscribe</button>
+</form>
+{%- endif %}

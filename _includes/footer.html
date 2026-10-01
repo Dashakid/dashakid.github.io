@@ -1,0 +1,13 @@
+<footer class="site-foot">
+  <div class="wrap">
+    <span>&copy; {{ site.time | date: "%Y" }} {{ site.author.name }} &middot; Puerto Rico</span>
+    <span>
+      <a href="https://github.com/{{ site.author.github }}">GitHub</a><a href="https://www.linkedin.com/in/{{ site.author.linkedin }}">LinkedIn</a>{% if site.author.content_handle and site.author.content_handle != "" %}<a href="{{ site.author.content_url }}">{{ site.author.content_handle }}</a>{% endif %}<a href="mailto:{{ site.author.email }}">Email</a><a href="{{ '/feed.xml' | relative_url }}">RSS</a>
+    </span>
+  </div>
+</footer>
+
+<div class="mobile-bar">
+  <span>{{ site.author.email }}</span>
+  <a href="/#contact" class="btn btn-primary">Start a project</a>
+</div>

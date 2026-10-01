@@ -1,0 +1,52 @@
+# Site settings. GitHub Pages rebuilds the site from these on every push.
+
+title: Gian-Carlo Javier
+tagline: Build logs
+description: >-
+  Gian-Carlo Javier builds ML pipelines, trading systems and AI automations.
+  Build logs on how each system works, what it checks and what broke.
+url: https://dashakid.github.io
+baseurl: ""
+lang: en
+share_image: /assets/share.png
+
+author:
+  name: Gian-Carlo Javier
+  email: dashakid@live.com
+  github: Dashakid
+  linkedin: gian-carlo-javier-b0b86b16b
+  # Your content handle once you start posting, e.g. "@dashakid" and its URL.
+  content_handle: ""
+  content_url: ""
+
+# Analytics: fill in ONE of these and push. Leave empty to load nothing.
+# Plausible: sign up at plausible.io, add the site, put the domain here.
+plausible_domain: ""
+# Google Analytics 4: the measurement ID, e.g. "G-XXXXXXXXXX".
+ga_id: ""
+
+# Newsletter: leave empty until you start posting regularly.
+# Buttondown example: https://buttondown.com/api/emails/embed-subscribe/YOUR_USERNAME
+newsletter_action: ""
+
+# Every file in _posts/ becomes a page at /projects/<file-name-without-date>
+permalink: /projects/:title
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+
+plugins:
+  - jekyll-feed
+
+feed:
+  path: feed.xml
+
+markdown: kramdown
+kramdown:
+  input: GFM
+
+exclude:
+  - README.md

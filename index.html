@@ -1,1766 +1,704 @@
+---
+layout: null
+---
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gian-Carlo Javier — AI Automation Engineer</title>
-<meta name="description" content="Gian-Carlo Javier. AI automation engineer building production ML pipelines, quant systems, and agentic orchestrators. Puerto Rico.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+{% include head.html %}
 <style>
-/* ============================================================
-   TOKENS — deep-aquatic
-   ============================================================ */
-:root {
-  --bg: #070a0c;
-  --bg-raise: #0a1013;
-  --ink: #e4edeb;
-  --ink-dim: #87a09b;
-  --ink-faint: #4b5c58;
-  --teal: #14b8a6;
-  --sea: #2da89b;
-  --teal-soft: rgba(20, 184, 166, 0.12);
-  --green: #4fd1a5;
-  --amber: #d6b35c;
-  --red: #d47a6a;
-  --hairline: rgba(20, 184, 166, 0.12);
-  --hairline-soft: rgba(20, 184, 166, 0.07);
-  --glass: rgba(20, 184, 166, 0.025);
-  --serif: "Instrument Serif", Georgia, "Times New Roman", serif;
-  --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --mono: "JetBrains Mono", "SF Mono", SFMono-Regular, Menlo, monospace;
-  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-  --maxw: 1120px;
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-
-body {
-  background: var(--bg);
-  color: var(--ink);
-  font-family: var(--sans);
-  font-size: 16px;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  overflow-x: hidden;
-}
-
-::selection { background: rgba(20, 184, 166, 0.3); color: #fff; }
-
-/* ============================================================
-   AMBIENT LAYERS — canvas bubbles + caustic blobs + grain
-   ============================================================ */
-#field { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-
-.caustics { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
-.blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(90px);
-  will-change: transform;
-}
-.blob.b1 {
-  width: 58vw; height: 58vw;
-  top: -24vw; right: -16vw;
-  background: radial-gradient(circle, rgba(20, 184, 166, 0.16), transparent 62%);
-  animation: drift1 34s ease-in-out infinite alternate;
-}
-.blob.b2 {
-  width: 52vw; height: 52vw;
-  bottom: -20vw; left: -18vw;
-  background: radial-gradient(circle, rgba(45, 168, 155, 0.11), transparent 60%);
-  animation: drift2 46s ease-in-out infinite alternate;
-}
-.blob.b3 {
-  width: 38vw; height: 38vw;
-  top: 42%; left: 46%;
-  background: radial-gradient(circle, rgba(24, 120, 130, 0.1), transparent 60%);
-  animation: drift3 40s ease-in-out infinite alternate;
-}
-@keyframes drift1 { from { transform: translate(0, 0) scale(1); } to { transform: translate(-9vw, 12vh) scale(1.18); } }
-@keyframes drift2 { from { transform: translate(0, 0) scale(1.1); } to { transform: translate(10vw, -9vh) scale(0.94); } }
-@keyframes drift3 { from { transform: translate(0, 0) scale(0.92); } to { transform: translate(-12vw, -10vh) scale(1.12); } }
-
-.grain {
-  position: fixed;
-  inset: -50%;
-  z-index: 2;
-  pointer-events: none;
-  opacity: 0.03;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  animation: grain 9s steps(6) infinite;
-}
-@keyframes grain {
-  0%, 100% { transform: translate(0, 0); }
-  20% { transform: translate(-4%, 3%); }
-  40% { transform: translate(3%, -5%); }
-  60% { transform: translate(-3%, -2%); }
-  80% { transform: translate(4%, 4%); }
-}
-
-main { position: relative; z-index: 3; }
-
-/* ============================================================
-   TYPE UTILITIES
-   ============================================================ */
-.label {
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  font-weight: 500;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-}
-.serif { font-family: var(--serif); font-weight: 400; }
-.wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 clamp(1.25rem, 4vw, 2.5rem); }
-
-/* ============================================================
-   NAV
-   ============================================================ */
-nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 50;
-  padding: 1.1rem 0;
-  background: linear-gradient(to bottom, rgba(7, 10, 12, 0.85), rgba(7, 10, 12, 0));
-  -webkit-backdrop-filter: blur(2px);
-  backdrop-filter: blur(2px);
-}
-.nav-inner { display: flex; align-items: baseline; justify-content: space-between; }
-.nav-mark {
-  font-family: var(--serif);
-  font-size: 1.15rem;
-  color: var(--ink);
-  text-decoration: none;
-  letter-spacing: 0.01em;
-}
-.nav-mark em { color: var(--teal); font-style: italic; }
-.nav-links { display: flex; gap: 1.8rem; }
-.nav-links a {
-  font-family: var(--mono);
-  font-size: 0.68rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--ink-dim);
-  text-decoration: none;
-  transition: color 0.3s;
-}
-.nav-links a:hover { color: var(--ink); }
-
-/* ============================================================
-   HERO
-   ============================================================ */
-.hero {
-  position: relative;
-  min-height: 92vh;
-  display: flex;
-  overflow: hidden;
-}
-.hero-media {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: var(--bg);
-}
-.hero-media video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0;
-  transition: opacity 1.4s var(--ease-out);
-  filter: saturate(0.75) brightness(0.8);
-}
-.hero-media video.ready { opacity: 0.5; }
-.hero-media::after {
-  /* scrim: keeps text ≥ AA contrast over any video frame */
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(to right, rgba(7, 10, 12, 0.9) 0%, rgba(7, 10, 12, 0.66) 55%, rgba(7, 10, 12, 0.45) 100%),
-    linear-gradient(to bottom, rgba(7, 10, 12, 0.6), rgba(7, 10, 12, 0.35) 55%, var(--bg) 98%);
-}
-.hero-inner {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding-top: 6rem;
-  padding-bottom: 4rem;
-}
-@media (prefers-reduced-motion: reduce) {
-  .hero-media video { display: none; }
-}
-.hero-kicker { display: flex; align-items: center; gap: 0.9rem; margin-bottom: 2rem; }
-.hero-kicker .rule { width: 42px; height: 1px; background: var(--teal); opacity: 0.6; }
-.hero h1 {
-  font-family: var(--serif);
-  font-weight: 400;
-  font-size: clamp(3rem, 8.5vw, 6.4rem);
-  line-height: 1.04;
-  letter-spacing: -0.015em;
-  max-width: 15ch;
-}
-.hero h1 em { font-style: italic; color: var(--teal); }
-.hero-sub {
-  margin-top: 2.2rem;
-  max-width: 46ch;
-  color: var(--ink-dim);
-  font-size: clamp(1rem, 1.6vw, 1.12rem);
-  line-height: 1.75;
-}
-.hero-meta {
-  margin-top: 3.2rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2.6rem;
-  font-family: var(--mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-}
-.hero-meta span b { color: var(--ink-dim); font-weight: 500; }
-.hero-meta .dot-live { color: var(--green); }
-.scroll-cue {
-  margin-top: auto;
-  padding-top: 3rem;
-  font-family: var(--mono);
-  font-size: 0.65rem;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  display: inline-flex;
-  align-items: center;
-  gap: 0.8rem;
-}
-.scroll-cue::after {
-  content: "";
-  width: 1px; height: 34px;
-  background: linear-gradient(var(--ink-faint), transparent);
-  animation: cue 2.4s var(--ease-out) infinite;
-}
-@keyframes cue {
-  0% { transform: scaleY(0); transform-origin: top; }
-  45% { transform: scaleY(1); transform-origin: top; }
-  55% { transform: scaleY(1); transform-origin: bottom; }
-  100% { transform: scaleY(0); transform-origin: bottom; }
-}
-
-/* ============================================================
-   SECTION SCAFFOLD
-   ============================================================ */
-section { padding: clamp(4rem, 9vw, 7.5rem) 0; }
-.sec-head { display: flex; align-items: baseline; gap: 1.4rem; margin-bottom: clamp(2.4rem, 5vw, 4rem); }
-.sec-head .num { font-family: var(--mono); font-size: 0.72rem; color: var(--teal); letter-spacing: 0.1em; }
-.sec-head h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(1.9rem, 4vw, 2.9rem); letter-spacing: -0.01em; }
-.sec-head h2 em { font-style: italic; color: var(--teal); }
-.sec-head .line { flex: 1; height: 1px; background: var(--hairline-soft); align-self: center; }
-
-/* ============================================================
-   GLASS CARD — mouse-tracked radial lighting
-   ============================================================ */
-.glass {
-  position: relative;
-  background: var(--glass);
-  border: 1px solid var(--hairline);
-  border-radius: 18px;
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  overflow: hidden;
-  transition: border-color 0.5s var(--ease-out), transform 0.5s var(--ease-out), background 0.5s;
-}
-.glass::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: radial-gradient(480px circle at var(--mx, 50%) var(--my, 50%), rgba(20, 184, 166, 0.08), transparent 42%);
-  opacity: 0;
-  transition: opacity 0.45s var(--ease-out);
-  pointer-events: none;
-}
-.glass::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: radial-gradient(280px circle at var(--mx, 50%) var(--my, 50%), rgba(63, 210, 190, 0.5), transparent 46%);
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-          mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 0.45s var(--ease-out);
-  pointer-events: none;
-}
-.glass:hover::before, .glass:hover::after { opacity: 1; }
-.glass:hover { border-color: rgba(20, 184, 166, 0.2); background: rgba(20, 184, 166, 0.04); }
-
-/* ============================================================
-   WORK GRID
-   ============================================================ */
-.work-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 1.4rem; }
-.group-label {
-  display: flex;
-  align-items: center;
-  gap: 1.2rem;
-  margin: 3rem 0 1.3rem;
-  font-family: var(--mono);
-  font-size: 0.64rem;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-}
-.group-label:first-of-type { margin-top: 0; }
-.group-label .gline { flex: 1; height: 1px; background: var(--hairline-soft); }
-.live.wip {
-  color: var(--amber);
-  border-color: rgba(214, 179, 92, 0.25);
-  background: rgba(214, 179, 92, 0.06);
-}
-.live.wip .pip { background: var(--amber); animation: none; }
-.live.paper {
-  color: var(--ink-dim);
-  border-color: var(--hairline);
-  background: rgba(255, 255, 255, 0.02);
-}
-.live.paper .pip { background: var(--ink-dim); animation: none; }
-.card { padding: clamp(1.6rem, 3vw, 2.4rem); display: flex; flex-direction: column; }
-.card.span-7 { grid-column: span 7; }
-.card.span-5 { grid-column: span 5; }
-.card.span-6 { grid-column: span 6; }
-.card.span-4 { grid-column: span 4; }
-.card.span-12 { grid-column: span 12; }
-.card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1.1rem; }
-.card-index { font-family: var(--mono); font-size: 0.66rem; color: var(--ink-faint); letter-spacing: 0.2em; }
-.card h3 { font-family: var(--serif); font-weight: 400; font-size: clamp(1.5rem, 2.6vw, 1.95rem); letter-spacing: -0.005em; margin-bottom: 0.7rem; }
-.card h3 em { font-style: italic; color: var(--teal); }
-.card p.desc { color: var(--ink-dim); font-size: 0.94rem; line-height: 1.7; flex-grow: 1; }
-.tags { display: flex; flex-wrap: wrap; gap: 0.45rem; margin: 1.4rem 0 1.5rem; }
-.tag {
-  font-family: var(--mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink-dim);
-  border: 1px solid var(--hairline-soft);
-  border-radius: 999px;
-  padding: 0.28rem 0.7rem;
-}
-.card-actions { display: flex; gap: 1.6rem; align-items: center; flex-wrap: wrap; }
-.link-arrow {
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--ink);
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  transition: color 0.3s;
-}
-.link-arrow .arr { transition: transform 0.35s var(--ease-out); display: inline-block; }
-.link-arrow:hover { color: var(--teal); }
-.link-arrow:hover .arr { transform: translateX(5px); }
-.inspect-btn {
-  font-family: var(--mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--teal);
-  background: var(--teal-soft);
-  border: 1px solid rgba(20, 184, 166, 0.28);
-  border-radius: 999px;
-  padding: 0.52rem 1.05rem;
-  cursor: pointer;
-  transition: background 0.3s, transform 0.3s var(--ease-out), border-color 0.3s;
-}
-.inspect-btn:hover { background: rgba(20, 184, 166, 0.2); transform: translateY(-1px); border-color: rgba(20, 184, 166, 0.45); }
-
-/* live badge */
-.live {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: var(--mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--green);
-  border: 1px solid rgba(79, 209, 165, 0.25);
-  background: rgba(79, 209, 165, 0.06);
-  border-radius: 999px;
-  padding: 0.32rem 0.78rem;
-  white-space: nowrap;
-}
-.live .pip {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--green);
-  animation: ping 2.2s var(--ease-out) infinite;
-}
-@keyframes ping {
-  0% { box-shadow: 0 0 0 0 rgba(79, 209, 165, 0.45); }
-  70% { box-shadow: 0 0 0 7px rgba(79, 209, 165, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(79, 209, 165, 0); }
-}
-
-/* ============================================================
-   QUANT PANEL (trading card)
-   ============================================================ */
-.quant-panel {
-  margin-top: 1.5rem;
-  border: 1px solid var(--hairline-soft);
-  border-radius: 12px;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 1.1rem 1.2rem 0.9rem;
-  font-family: var(--mono);
-}
-.quant-row { display: flex; align-items: center; gap: 1rem; padding: 0.55rem 0; }
-.quant-row + .quant-row { border-top: 1px solid var(--hairline-soft); }
-.quant-sym { font-size: 0.68rem; letter-spacing: 0.1em; color: var(--ink-dim); width: 7.2em; flex-shrink: 0; }
-.quant-spark { flex: 1; min-width: 0; height: 26px; }
-.quant-spark polyline { fill: none; stroke-width: 1.4; stroke-linejoin: round; stroke-linecap: round; }
-.quant-val { font-size: 0.68rem; width: 5.4em; text-align: right; flex-shrink: 0; font-variant-numeric: tabular-nums; }
-.quant-val.up { color: var(--green); }
-.quant-val.down { color: var(--red); }
-.quant-foot {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.65rem 0 0.2rem;
-  border-top: 1px solid var(--hairline-soft);
-  margin-top: 0.2rem;
-  font-size: 0.6rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-}
-.quant-foot .lat { color: var(--teal); font-variant-numeric: tabular-nums; }
-
-/* ============================================================
-   DRAWER — slide-out system inspector
-   ============================================================ */
-.drawer-veil {
-  position: fixed;
-  inset: 0;
-  z-index: 90;
-  background: rgba(4, 7, 8, 0.6);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.45s var(--ease-out);
-}
-.drawer-veil.open { opacity: 1; pointer-events: auto; }
-
-.drawer {
-  position: fixed;
-  top: 0; right: 0; bottom: 0;
-  z-index: 91;
-  width: min(580px, 100vw);
-  background: rgba(8, 13, 15, 0.72);
-  -webkit-backdrop-filter: blur(20px);
-  backdrop-filter: blur(20px);
-  border-left: 1px solid var(--hairline);
-  transform: translateX(103%);
-  transition: transform 0.6s var(--ease-out);
-  display: flex;
-  flex-direction: column;
-  box-shadow: -40px 0 90px rgba(0, 0, 0, 0.5);
-}
-.drawer.open { transform: translateX(0); }
-.drawer-head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: clamp(1.4rem, 3vw, 2rem) clamp(1.4rem, 3vw, 2.2rem) 1.1rem;
-  border-bottom: 1px solid var(--hairline-soft);
-  flex-shrink: 0;
-}
-.drawer-head .dk { display: block; color: var(--teal); opacity: 0.8; margin-bottom: 0.55rem; }
-.drawer-head h4 { font-family: var(--serif); font-weight: 400; font-size: 1.7rem; line-height: 1.15; }
-.drawer-head h4 em { font-style: italic; color: var(--teal); }
-.drawer-close {
-  background: none;
-  border: 1px solid var(--hairline);
-  border-radius: 999px;
-  color: var(--ink-dim);
-  width: 36px; height: 36px;
-  flex-shrink: 0;
-  cursor: pointer;
-  font-size: 0.9rem;
-  line-height: 1;
-  transition: color 0.3s, border-color 0.3s, transform 0.3s;
-}
-.drawer-close:hover { color: var(--ink); border-color: rgba(20, 184, 166, 0.4); transform: rotate(90deg); }
-.drawer-body {
-  overflow-y: auto;
-  padding: clamp(1.4rem, 3vw, 2rem) clamp(1.4rem, 3vw, 2.2rem) 3rem;
-  flex: 1;
-  overscroll-behavior: contain;
-}
-
-/* drawer building blocks */
-.dsec { margin-bottom: 2.2rem; }
-.dsec > .label { display: block; margin-bottom: 1rem; color: var(--teal); opacity: 0.75; }
-.dsec p.note { color: var(--ink-dim); font-size: 0.86rem; line-height: 1.7; margin-bottom: 1rem; }
-
-.flow { display: flex; flex-direction: column; }
-.fnode {
-  border: 1px solid var(--hairline);
-  background: rgba(20, 184, 166, 0.03);
-  border-radius: 10px;
-  padding: 0.7rem 1rem;
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.06em;
-  color: var(--ink);
-}
-.fnode small { display: block; color: var(--ink-faint); font-size: 0.6rem; margin-top: 3px; letter-spacing: 0.08em; }
-.fjoin {
-  width: 1px; height: 18px;
-  margin-left: 1.6rem;
-  background: linear-gradient(var(--teal), rgba(20, 184, 166, 0.15));
-  position: relative;
-}
-.fjoin::after {
-  content: "▾";
-  position: absolute;
-  left: 50%; bottom: -7px;
-  transform: translateX(-50%);
-  color: var(--teal);
-  font-size: 0.55rem;
-  opacity: 0.7;
-}
-
-.dlist { display: flex; flex-direction: column; gap: 0.65rem; }
-.dlist .row {
-  display: flex;
-  gap: 0.9rem;
-  align-items: baseline;
-  font-size: 0.84rem;
-  color: var(--ink-dim);
-  line-height: 1.55;
-}
-.dlist .row b {
-  font-family: var(--mono);
-  font-weight: 500;
-  font-size: 0.66rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--teal);
-  flex-shrink: 0;
-  width: 8.5em;
-}
-
-.metric { margin-bottom: 0.9rem; }
-.metric .mrow {
-  display: flex;
-  justify-content: space-between;
-  font-family: var(--mono);
-  font-size: 0.64rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-dim);
-  margin-bottom: 0.4rem;
-}
-.metric .mval { color: var(--ink); font-variant-numeric: tabular-nums; }
-.mbar { height: 4px; border-radius: 4px; background: rgba(255, 255, 255, 0.05); overflow: hidden; }
-.mfill {
-  height: 100%;
-  width: 0%;
-  border-radius: 4px;
-  background: var(--teal);
-  transition: width 1.1s var(--ease-out);
-}
-.mfill.g { background: var(--green); }
-.mfill.y { background: var(--amber); }
-.mfill.r { background: var(--red); }
-
-.dlog {
-  border: 1px solid var(--hairline-soft);
-  border-radius: 10px;
-  background: rgba(0, 0, 0, 0.4);
-  font-family: var(--mono);
-  font-size: 0.64rem;
-  line-height: 1.9;
-  padding: 0.9rem 1rem;
-  height: 210px;
-  overflow-y: auto;
-  color: var(--ink-dim);
-}
-.dlog .t { color: var(--ink-faint); }
-.dlog .buy { color: var(--green); }
-.dlog .sell { color: var(--red); }
-.dlog .sys { color: var(--teal); }
-.dlog div { opacity: 0; animation: login 0.4s var(--ease-out) forwards; }
-@keyframes login { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
-
-.chat { display: flex; flex-direction: column; gap: 0.7rem; }
-.bubble {
-  max-width: 88%;
-  border-radius: 12px;
-  padding: 0.7rem 0.95rem;
-  font-size: 0.78rem;
-  line-height: 1.6;
-  color: var(--ink-dim);
-  border: 1px solid var(--hairline-soft);
-}
-.bubble.sysmsg {
-  font-family: var(--mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.04em;
-  color: var(--ink-faint);
-  background: rgba(0, 0, 0, 0.3);
-  align-self: stretch;
-  max-width: 100%;
-}
-.bubble.out { align-self: flex-end; background: rgba(20, 184, 166, 0.08); border-color: rgba(20, 184, 166, 0.2); color: var(--ink); }
-.bubble.in { align-self: flex-start; background: rgba(255, 255, 255, 0.03); }
-.bubble .who {
-  display: block;
-  font-family: var(--mono);
-  font-size: 0.56rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  margin-bottom: 0.35rem;
-}
-
-/* CoKeeper ledger widget (inside drawer) */
-.ledger { border: 1px solid var(--hairline-soft); border-radius: 12px; overflow: hidden; font-family: var(--mono); }
-.ledger-head {
-  display: grid;
-  grid-template-columns: 1fr 9.5em;
-  gap: 0.8rem;
-  padding: 0.7rem 1rem;
-  font-size: 0.58rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-  background: rgba(255, 255, 255, 0.02);
-  border-bottom: 1px solid var(--hairline-soft);
-}
-.txn {
-  display: grid;
-  grid-template-columns: 1fr 9.5em;
-  gap: 0.8rem;
-  align-items: center;
-  padding: 0.75rem 1rem;
-  font-size: 0.68rem;
-  border-bottom: 1px solid var(--hairline-soft);
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out);
-}
-.txn.shown { opacity: 1; transform: none; }
-.txn:last-child { border-bottom: none; }
-.txn .m { color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.txn .m small { display: block; color: var(--ink-faint); font-size: 0.57rem; margin-top: 2px; letter-spacing: 0.05em; }
-.txn .cls { display: flex; flex-direction: column; gap: 5px; }
-.txn .verdict { font-size: 0.6rem; color: var(--ink-faint); min-height: 1em; }
-.txn.done .verdict { color: var(--ink); }
-.conf-track { height: 3px; border-radius: 3px; background: rgba(255, 255, 255, 0.06); overflow: hidden; }
-.conf-fill { height: 100%; width: 0%; border-radius: 3px; transition: width 0.9s var(--ease-out); }
-.txn .pct { font-size: 0.55rem; letter-spacing: 0.08em; color: var(--ink-faint); }
-.txn.t-g .conf-fill { background: var(--green); }
-.txn.t-y .conf-fill { background: var(--amber); }
-.txn.t-r .conf-fill { background: var(--red); }
-.txn.done.t-g .pct { color: var(--green); }
-.txn.done.t-y .pct { color: var(--amber); }
-.txn.done.t-r .pct { color: var(--red); }
-.replay-btn {
-  margin-top: 1rem;
-  font-family: var(--mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--teal);
-  background: var(--teal-soft);
-  border: 1px solid rgba(20, 184, 166, 0.28);
-  border-radius: 999px;
-  padding: 0.48rem 1.05rem;
-  cursor: pointer;
-  transition: background 0.3s, transform 0.3s;
-}
-.replay-btn:hover { background: rgba(20, 184, 166, 0.2); transform: translateY(-1px); }
-
-/* ============================================================
-   STACK / CONTACT / FOOTER
-   ============================================================ */
-.stack-flow { display: flex; flex-wrap: wrap; gap: 0.6rem; }
-.stack-chip {
-  font-family: var(--mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.1em;
-  color: var(--ink-dim);
-  border: 1px solid var(--hairline);
-  background: var(--glass);
-  border-radius: 999px;
-  padding: 0.55rem 1.05rem;
-  transition: color 0.35s, border-color 0.35s, background 0.35s, transform 0.35s var(--ease-out);
-}
-.stack-chip:hover {
-  color: var(--ink);
-  border-color: rgba(20, 184, 166, 0.4);
-  background: var(--teal-soft);
-  transform: translateY(-2px);
-}
-
-.contact { padding-bottom: 3rem; }
-.contact-card { padding: clamp(2.2rem, 5vw, 4rem); display: flex; flex-direction: column; align-items: flex-start; gap: 1.6rem; }
-.contact-card h2 {
-  font-family: var(--serif);
-  font-weight: 400;
-  font-size: clamp(2.1rem, 5vw, 3.4rem);
-  line-height: 1.1;
-  max-width: 18ch;
-}
-.contact-card h2 em { font-style: italic; color: var(--teal); }
-.contact-links { display: flex; flex-wrap: wrap; gap: 1.8rem; }
-
-footer { padding: 2.4rem 0 3rem; border-top: 1px solid var(--hairline-soft); }
-.foot-inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-  font-family: var(--mono);
-  font-size: 0.64rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
-}
-
-/* ============================================================
-   REVEAL / RESPONSIVE / MOTION
-   ============================================================ */
-.reveal {
-  opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out);
-  transition-delay: var(--d, 0s);
-}
-.reveal.in { opacity: 1; transform: none; }
-
-@media (max-width: 900px) {
-  .card.span-7, .card.span-5, .card.span-6, .card.span-4 { grid-column: span 12; }
-  .nav-links a:not(:last-child) { display: none; }
-}
-@media (max-width: 560px) {
-  .quant-sym { width: 5.6em; }
-  .hero-meta { gap: 1.2rem 2rem; }
-  .dlist .row { flex-direction: column; gap: 0.15rem; }
-}
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  .reveal { opacity: 1; transform: none; transition: none; }
-  .grain, .scroll-cue::after, .live .pip, .blob { animation: none; }
-  * { transition-duration: 0.01ms !important; }
-}
+{% include site.css %}
 </style>
 </head>
 <body>
 
-<canvas id="field" aria-hidden="true"></canvas>
-<div class="caustics" aria-hidden="true">
-  <div class="blob b1"></div>
-  <div class="blob b2"></div>
-  <div class="blob b3"></div>
+<div class="opener" aria-hidden="true">
+  <div class="opener-inner"><div class="opener-mark">GJ</div><div class="opener-line"></div></div>
 </div>
+<div class="progress" aria-hidden="true"></div>
+<div class="spotlight" aria-hidden="true"></div>
 <div class="grain" aria-hidden="true"></div>
+<div class="room" aria-hidden="true"><i class="room-dot"></i><span id="roomName">Intro</span></div>
 
-<nav>
-  <div class="wrap nav-inner">
-    <a class="nav-mark" href="#top">G<em>—</em>C Javier</a>
-    <div class="nav-links">
-      <a href="#work">Work</a>
-      <a href="#stack">Stack</a>
-      <a href="#contact">Contact</a>
-    </div>
-  </div>
-</nav>
+{% include nav.html %}
 
 <main id="top">
 
-  <!-- ================= HERO ================= -->
-  <header class="hero">
-    <div class="hero-media" aria-hidden="true">
-      <video id="heroVideo" class="hero-video" autoplay muted loop playsinline preload="none" poster="beach-poster.jpg"></video>
-    </div>
-    <div class="wrap hero-inner">
-    <div class="hero-kicker reveal">
-      <span class="rule"></span>
-      <span class="label" style="color: var(--teal); opacity: 0.85;">AI Automation · Data Science</span>
-    </div>
-    <h1 class="reveal" style="--d: 0.08s;">Systems that think,<br>pipelines that <em>ship.</em></h1>
-    <p class="hero-sub reveal" style="--d: 0.16s;">
-      I'm Gian-Carlo Javier — I build production-grade ML pipelines, quant trading
-      systems, and agentic orchestrators. Financial automation, real-time data,
-      and AI integrations that hold up under real load.
-    </p>
-    <div class="hero-meta reveal" style="--d: 0.24s;">
-      <span><b>Base</b> — Puerto Rico 🇵🇷</span>
-      <span><b>Focus</b> — Fin-automation / ML</span>
-      <span class="dot-live">● 7 systems live in production</span>
-    </div>
-    <span class="scroll-cue">Scroll</span>
-    </div>
-  </header>
-
-  <!-- ================= WORK ================= -->
-  <section id="work">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <span class="num">01</span>
-        <h2>Selected <em>work</em></h2>
-        <span class="line"></span>
+  <!-- HERO -->
+  <section class="hero" data-room="Intro" id="intro">
+    <div class="wrap hero-grid">
+      <div class="hero-copy reveal">
+        <span class="label">AI automation &middot; Puerto Rico</span>
+        <h1>Systems that think, pipelines that <em>ship</em>.</h1>
+        <p>I'm Gian-Carlo Javier. I build ML pipelines, trading systems and AI automations for work that's repetitive but messy: bank transactions, missed calls, market data, customer reviews. Each one scores its own confidence and says when it shouldn't be trusted. This site is where I write up how they work.</p>
+        <div class="hero-btns">
+          <a href="#logs" class="btn btn-primary">Read the build logs</a>
+          <a href="#contact" class="btn btn-ghost">Start a project</a>
+        </div>
+        <div class="micro">
+          <img src="/assets/me.jpg" alt="" width="34" height="34">
+          <span>Seven systems live in production. Python, FastAPI, CatBoost, Twilio, Redis, Postgres, AWS, GCP.</span>
+        </div>
       </div>
-
-      <div class="group-label reveal"><span>Live / Production</span><span class="gline"></span></div>
-      <div class="work-grid">
-
-        <!-- STOCK TRADING BOT -->
-        <article class="glass card span-7 reveal">
-          <div class="card-top">
-            <span class="card-index">P.01</span>
-            <span class="live"><span class="pip"></span>Live · Alpaca Paper · Apr 2026</span>
+      <div class="reveal">
+        <div class="frame" id="frame">
+          <canvas id="gate" tabindex="0" role="img" aria-label="Live simulation of a risk gate: trade signals flow left to right through four checks: confidence, edge, exposure and duplicate. Signals that fail a check are blocked. Click or press Enter to change the confidence threshold."></canvas>
+          <span class="hud hud-tl">Risk gate &middot; sim</span>
+          <span class="hud hud-tr" id="modeTag">Default &middot; 60%</span>
+          <div class="readout">
+            <div><span>Signals</span><b class="num" id="rSeen">0</b></div>
+            <div><span>Passed</span><b class="num" id="rPass">0</b></div>
+            <div><span>Blocked</span><b class="num" id="rBlock">0</b></div>
+            <div><span>Pass rate</span><b class="num" id="rRate">0%</b></div>
           </div>
-          <h3>Stock Trading <em>Bot</em></h3>
-          <p class="desc">
-            An ML momentum-rotation strategy trading the Nasdaq-100 — 126-day lookback,
-            monthly rebalance — live on Alpaca paper trading since April 2026. CatBoost
-            scores the universe; a crash guard and a sector concentration cap keep the
-            portfolio honest when the regime turns.
-          </p>
-          <div class="tags">
-            <span class="tag">CatBoost</span><span class="tag">FastAPI</span>
-            <span class="tag">Redis</span><span class="tag">PostgreSQL</span>
-            <span class="tag">WebSocket</span>
-          </div>
-          <div class="quant-panel" aria-hidden="true">
-            <div class="quant-row">
-              <span class="quant-sym">NDX·SIGNAL</span>
-              <svg class="quant-spark" viewBox="0 0 200 26" preserveAspectRatio="none"><polyline id="spark1" stroke="#4fd1a5" points=""/></svg>
-              <span class="quant-val up" id="val1">+0.00%</span>
-            </div>
-            <div class="quant-row">
-              <span class="quant-sym">PORT·EQUITY</span>
-              <svg class="quant-spark" viewBox="0 0 200 26" preserveAspectRatio="none"><polyline id="spark2" stroke="#14b8a6" points=""/></svg>
-              <span class="quant-val up" id="val2">+0.00%</span>
-            </div>
-            <div class="quant-row">
-              <span class="quant-sym">REBALANCE</span>
-              <svg class="quant-spark" viewBox="0 0 200 26" preserveAspectRatio="none"><polyline id="spark3" stroke="#87a09b" points=""/></svg>
-              <span class="quant-val" id="val3">T–12d</span>
-            </div>
-            <div class="quant-foot">
-              <span>Feed · Alpaca WS · Paper account</span>
-              <span class="lat" id="latency">— ms</span>
-            </div>
-          </div>
-          <div class="card-actions" style="margin-top: 1.5rem;">
-            <button class="inspect-btn" type="button" data-drawer="trading">Inspect Architecture ↗</button>
-            <a class="link-arrow" href="projects/trading-bot">Docs <span class="arr">→</span></a>
-          </div>
-        </article>
-
-        <!-- COKEEPER -->
-        <article class="glass card span-5 reveal" style="--d: 0.1s;">
-          <div class="card-top">
-            <span class="card-index">P.02</span>
-            <span class="label">92.5% prod accuracy</span>
-          </div>
-          <h3>CoKeeper <em>AI</em></h3>
-          <p class="desc">
-            A machine-learning SaaS deployed on GCP that categorizes General-Ledger
-            transactions for accountants, running at 92.5% accuracy in production.
-            A five-level vendor cascade and confidence tiers turn eight hours of manual
-            entry into thirty minutes of review — users know exactly what to trust.
-          </p>
-          <div class="tags">
-            <span class="tag">CatBoost</span><span class="tag">scikit-learn</span>
-            <span class="tag">Docker</span><span class="tag">GCP</span>
-          </div>
-          <div class="card-actions">
-            <button class="inspect-btn" type="button" data-drawer="cokeeper">Inspect Architecture ↗</button>
-            <a class="link-arrow" href="projects/cokeeper">Docs <span class="arr">→</span></a>
-          </div>
-        </article>
-
-        <!-- MISSED-CALL RESCUE -->
-        <article class="glass card span-6 reveal">
-          <div class="card-top">
-            <span class="card-index">P.03</span>
-          </div>
-          <h3>Missed-Call <em>Rescue</em></h3>
-          <p class="desc">
-            A Twilio-powered SaaS for solo-operator service businesses. When a call goes
-            unanswered it texts the caller back within seconds, follows up until the job is
-            booked, then automates the Google review request afterward. Sold on a setup fee
-            plus monthly retainer.
-          </p>
-          <div class="tags">
-            <span class="tag">Twilio</span><span class="tag">FastAPI</span>
-            <span class="tag">Webhooks</span><span class="tag">SaaS</span>
-          </div>
-          <div class="card-actions">
-            <button class="inspect-btn" type="button" data-drawer="misscall">Inspect Architecture ↗</button>
-          </div>
-        </article>
-
-        <!-- PINTONA -->
-        <article class="glass card span-6 reveal" style="--d: 0.1s;">
-          <div class="card-top">
-            <span class="card-index">P.04</span>
-            <span class="live"><span class="pip"></span>Live product</span>
-          </div>
-          <h3>Pintona — <em>AI Wardrobe</em></h3>
-          <p class="desc">
-            An AI outfit-scoring app built on Gemini — snap your clothes, build outfits, get
-            an honest score. No-build vanilla-JS PWA on Firebase with English, Spanish, and
-            Vietnamese support, installable on iOS and Android.
-          </p>
-          <div class="tags">
-            <span class="tag">Gemini</span><span class="tag">Firebase</span>
-            <span class="tag">PWA</span><span class="tag">i18n</span>
-          </div>
-          <div class="card-actions">
-            <button class="inspect-btn" type="button" data-drawer="pintona">Inspect Architecture ↗</button>
-            <a class="link-arrow" href="https://pintona.vercel.app">pintona.vercel.app <span class="arr">→</span></a>
-          </div>
-        </article>
-
-        <!-- COLD EMAIL OUTREACH AGENT -->
-        <article class="glass card span-4 reveal">
-          <div class="card-top">
-            <span class="card-index">P.05</span>
-            <span class="live"><span class="pip"></span>On EC2</span>
-          </div>
-          <h3>Cold Email <em>Outreach Agent</em></h3>
-          <p class="desc">
-            An autonomous outreach agent running on EC2 that handles prospecting and email
-            sequencing end-to-end — sourcing leads, personalizing openers, sending on a
-            warmed schedule, and watching the inbox for replies.
-          </p>
-          <div class="tags">
-            <span class="tag">EC2</span><span class="tag">Python</span>
-            <span class="tag">Sequencing</span>
-          </div>
-          <div class="card-actions">
-            <button class="inspect-btn" type="button" data-drawer="coldemail">Inspect Architecture ↗</button>
-          </div>
-        </article>
-
-        <!-- REVIEWSIGNAL -->
-        <article class="glass card span-4 reveal" style="--d: 0.08s;">
-          <div class="card-top">
-            <span class="card-index">P.06</span>
-            <span class="label">5–7 day delivery</span>
-          </div>
-          <h3>Review<em>Signal</em></h3>
-          <p class="desc">
-            Turns product reviews from Amazon, Shopify, Trustpilot, or MercadoLibre into a
-            decision-ready report: sentiment breakdown, top recurring complaints and praised
-            features via NMF topic modeling, and 3–5 quantified recommendations. Fixed scope,
-            fixed price, delivered as a shareable HTML report.
-          </p>
-          <div class="tags">
-            <span class="tag">VADER</span><span class="tag">BERT</span>
-            <span class="tag">NMF</span><span class="tag">EN/ES</span>
-          </div>
-          <div class="card-actions">
-            <button class="inspect-btn" type="button" data-drawer="reviewsignal">Inspect Architecture ↗</button>
-            <a class="link-arrow" href="projects/reviewsignal">Docs <span class="arr">→</span></a>
-          </div>
-        </article>
-
-        <!-- CLIENT WEBSITES -->
-        <article class="glass card span-4 reveal" style="--d: 0.16s;">
-          <div class="card-top">
-            <span class="card-index">P.07</span>
-            <span class="label">9 shipped</span>
-          </div>
-          <h3>Client <em>Websites</em></h3>
-          <p class="desc">
-            Nine live websites designed, built, and deployed end-to-end for clients —
-            performance-first builds with no framework overhead unless the job calls
-            for it. Pintona's stack started here.
-          </p>
-          <div class="tags">
-            <span class="tag">HTML/CSS/JS</span><span class="tag">Hosting</span>
-            <span class="tag">SEO</span>
-          </div>
-          <div class="card-actions">
-            <a class="link-arrow" href="mailto:dashakid@live.com">Request one <span class="arr">→</span></a>
-          </div>
-        </article>
-
-      </div>
-
-      <div class="group-label reveal"><span>In Progress</span><span class="gline"></span></div>
-      <div class="work-grid">
-
-        <!-- WHITE-LABEL PLATFORM -->
-        <article class="glass card span-6 reveal">
-          <div class="card-top">
-            <span class="card-index">P.08</span>
-            <span class="live wip"><span class="pip"></span>In build</span>
-          </div>
-          <h3>White-Label <em>Automation Platform</em></h3>
-          <p class="desc">
-            A client-management and marketing automation platform built to be resold under
-            other brands — one codebase, many storefronts. Grew out of running Missed-Call
-            Rescue for real clients.
-          </p>
-          <div class="tags">
-            <span class="tag">Multi-tenant</span><span class="tag">Automation</span>
-            <span class="tag">SaaS</span>
-          </div>
-        </article>
-
-        <!-- CO-ORCHESTRATOR -->
-        <article class="glass card span-6 reveal" style="--d: 0.1s;">
-          <div class="card-top">
-            <span class="card-index">P.09</span>
-            <span class="live wip"><span class="pip"></span>In build</span>
-          </div>
-          <h3>Co-<em>Orchestrator</em></h3>
-          <p class="desc">
-            A multi-agent LLM system that coordinates OpenAI and Anthropic APIs on the same
-            task — routing subtasks to whichever model does that job best, then merging
-            results into one execution thread.
-          </p>
-          <div class="tags">
-            <span class="tag">Claude API</span><span class="tag">OpenAI API</span>
-            <span class="tag">Multi-agent</span>
-          </div>
-        </article>
-
-      </div>
-
-      <div class="group-label reveal"><span>Also Featured</span><span class="gline"></span></div>
-      <div class="work-grid">
-
-        <!-- KAKASHI -->
-        <article class="glass card span-12 reveal">
-          <div class="card-top">
-            <span class="card-index">P.10</span>
-            <span class="live paper"><span class="pip"></span>Paper-validated</span>
-          </div>
-          <h3>Kakashi — <em>Polymarket copy-trader</em></h3>
-          <p class="desc" style="max-width: 68ch;">
-            A Polymarket copy-trading bot deployed to EC2. It tracks top wallets and mirrors
-            high-conviction positions through a risk-gate stack. Paper trading validated the
-            strategy; an exchange-side execution bug — a CLOB order version mismatch — blocked
-            live trading. The postmortem is in the inspector.
-          </p>
-          <div class="tags">
-            <span class="tag">EC2</span><span class="tag">WebSocket</span>
-            <span class="tag">CLOB</span><span class="tag">Risk Controls</span>
-          </div>
-          <div class="card-actions">
-            <button class="inspect-btn" type="button" data-drawer="kakashi">Inspect Architecture ↗</button>
-            <a class="link-arrow" href="projects/polymarket">Docs <span class="arr">→</span></a>
-          </div>
-        </article>
-
+        </div>
+        <p class="frame-note">Simplified version of the risk gate in Kakashi, my Polymarket bot. Click it to change how strict the confidence check is.</p>
       </div>
     </div>
   </section>
 
-  <!-- ================= STACK ================= -->
-  <section id="stack" style="padding-top: 0;">
+  <!-- LATEST + NOW: edit _data/updates.yml and _data/now.yml -->
+  <section data-room="Latest" id="latest" style="padding-top: clamp(56px, 7vw, 88px)">
     <div class="wrap">
-      <div class="sec-head reveal">
-        <span class="num">02</span>
-        <h2>System <em>stack</em></h2>
-        <span class="line"></span>
-      </div>
-      <div class="stack-flow reveal" style="--d: 0.1s;">
-        <span class="stack-chip">Python</span>
-        <span class="stack-chip">FastAPI</span>
-        <span class="stack-chip">LangGraph</span>
-        <span class="stack-chip">PostgreSQL</span>
-        <span class="stack-chip">Redis</span>
-        <span class="stack-chip">Docker</span>
-        <span class="stack-chip">CatBoost</span>
-        <span class="stack-chip">Asyncio</span>
-        <span class="stack-chip">GCP</span>
-        <span class="stack-chip">AWS</span>
-        <span class="stack-chip">Claude API</span>
-        <span class="stack-chip">OpenAI API</span>
-        <span class="stack-chip">Twilio</span>
-        <span class="stack-chip">Firebase</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= CONTACT ================= -->
-  <section id="contact" class="contact" style="padding-top: 0;">
-    <div class="wrap">
-      <div class="glass contact-card reveal">
-        <span class="label" style="color: var(--teal); opacity: 0.85;">Get in touch</span>
-        <h2>Building something that needs to <em>actually work?</em></h2>
-        <div class="contact-links">
-          <a class="link-arrow" href="mailto:dashakid@live.com">Email <span class="arr">→</span></a>
-          <a class="link-arrow" href="https://www.linkedin.com/in/gian-carlo-javier-b0b86b16b">LinkedIn <span class="arr">→</span></a>
-          <a class="link-arrow" href="https://github.com/Dashakid">GitHub <span class="arr">→</span></a>
+      <div class="pulse-grid reveal">
+        <div class="latest">
+          <div class="latest-head"><span class="label">Latest</span><a href="{{ '/feed.xml' | relative_url }}">RSS feed</a></div>
+          <ul class="updates">
+            {%- for u in site.data.updates limit: 5 %}
+            <li><time class="num" datetime="{{ u.date | date: '%Y-%m-%d' }}">{{ u.date | date: "%b %-d '%y" }}</time><span>{% if u.link %}<a href="{{ u.link | relative_url }}">{{ u.text }}</a>{% else %}{{ u.text }}{% endif %}</span></li>
+            {%- endfor %}
+          </ul>
+        </div>
+        <div class="now">
+          <span class="label">Now</span>
+          <p>{{ site.data.now.text }}</p>
+          <small>Updated {{ site.data.now.updated | date: "%b %-d, %Y" }}</small>
         </div>
       </div>
     </div>
   </section>
 
-  <footer>
-    <div class="wrap foot-inner">
-      <span>© 2026 Gian-Carlo Javier</span>
-      <span>Built for efficiency · Puerto Rico 🇵🇷</span>
+  <!-- STATS -->
+  <section data-room="Numbers" id="numbers" style="padding-top: clamp(40px, 5vw, 64px)">
+    <div class="wrap">
+      <div class="stats reveal">
+        <div class="stat"><div class="stat-n num" data-count="7">7</div><p>Systems live in production</p></div>
+        <div class="stat"><div class="stat-n num" data-count="9">9</div><p>Client websites designed, built and shipped</p></div>
+        <div class="stat"><div class="stat-n num" data-count="92.5" data-dec="1">92.5<small>%</small></div><p>CoKeeper accuracy in production</p></div>
+        <div class="stat"><div class="stat-n num" data-count="16">16<small>&times;</small></div><p>Less categorization time: 8 hours of entry down to 30 minutes of review</p></div>
+      </div>
     </div>
-  </footer>
+  </section>
 
+  <!-- BLOG -->
+  <section data-room="Build logs" id="logs">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div><span class="label">Build logs</span><h2>How the systems work</h2></div>
+        <p>Notes on every build: how the data flows, the checks that keep it safe, and what broke. Open any entry for the architecture, or read the full write-up where there is one.</p>
+      </div>
+
+      {%- assign featured = site.posts | where: "featured", true | first %}
+      {%- if featured %}
+      {%- assign fwords = featured.content | number_of_words %}
+      <a class="featured reveal" href="{{ featured.url | relative_url }}">
+        {%- if featured.image %}
+        <div class="featured-img"><img src="{{ featured.image | relative_url }}" alt="{{ featured.image_alt | escape }}" loading="lazy"></div>
+        {%- endif %}
+        <div class="featured-body">
+          <div class="meta"><span>Featured</span><time datetime="{{ featured.date | date_to_xmlschema }}">{{ featured.date | date: "%b %-d, %Y" }}</time><span class="num">{{ fwords | divided_by: 200 | at_least: 1 }} min read</span></div>
+          <h3>{{ featured.title }}</h3>
+          <p>{{ featured.excerpt | strip_html }}</p>
+          <span class="read-more">Read the write-up</span>
+        </div>
+      </a>
+      {%- endif %}
+
+      <div class="blog-tools reveal" style="margin-top: 48px">
+        <div class="chips" role="group" aria-label="Filter build logs by topic">
+          <button class="chip" type="button" data-filter="all" aria-pressed="true">All</button>
+          <button class="chip" type="button" data-filter="trading" aria-pressed="false">Trading</button>
+          <button class="chip" type="button" data-filter="ml" aria-pressed="false">ML &amp; NLP</button>
+          <button class="chip" type="button" data-filter="auto" aria-pressed="false">Automation</button>
+          <button class="chip" type="button" data-filter="web" aria-pressed="false">Web</button>
+        </div>
+        <div class="search">
+          <label for="q">Search</label>
+          <input id="q" type="search" placeholder="Twilio, CatBoost, EC2..." autocomplete="off">
+        </div>
+      </div>
+
+      <!-- One entry per file in _posts/, newest first. -->
+      <ol class="posts" id="posts">
+        {%- for post in site.posts %}
+        {%- assign words = post.content | number_of_words %}
+        <li class="post" data-cat="{{ post.topics | join: ' ' }}" data-text="{{ post.content | strip_html | normalize_whitespace | truncatewords: 160, '' | downcase | escape }}">
+          <a class="post-row" href="{{ post.url | relative_url }}">
+            <span class="post-idx num">{% if forloop.index < 10 %}0{% endif %}{{ forloop.index }}</span>
+            <div><time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%b %-d, %Y" }}</time><h3>{{ post.title }}</h3><p>{{ post.excerpt | strip_html }}</p></div>
+            <div class="meta">
+              {%- if post.status %}<span{% if post.live %} class="live"{% endif %}>{{ post.status }}</span>{% endif %}
+              <span class="num">{{ words | divided_by: 200 | at_least: 1 }} min read</span>
+              <span>{% for t in post.topics %}{% case t %}{% when "trading" %}Trading{% when "ml" %}ML{% when "auto" %}Automation{% when "web" %}Web{% else %}{{ t }}{% endcase %}{% unless forloop.last %} &middot; {% endunless %}{% endfor %}</span>
+            </div>
+          </a>
+        </li>
+        {%- endfor %}
+      </ol>
+      <p class="empty" id="empty" role="status">Nothing matches that yet. Try another word or clear the filter.</p>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section data-room="About" id="about">
+    <div class="wrap about reveal">
+      <img src="/assets/me.jpg" alt="Gian-Carlo Javier" width="480" height="430" loading="lazy">
+      <div>
+        <span class="label">About</span>
+        <h2>Hi, I'm Gian-Carlo.</h2>
+        <p>I'm an AI automation engineer and data scientist based in Puerto Rico. I build the systems in these logs end to end, from the model and the risk checks to the server they run on, and most of them started as a manual task someone was tired of doing. I write each one up because the hard part is rarely the model: it's deciding what the system should do when it isn't sure.</p>
+        <div class="about-links">
+          <a href="https://github.com/{{ site.author.github }}">GitHub</a>
+          <a href="https://www.linkedin.com/in/{{ site.author.linkedin }}">LinkedIn</a>
+          {%- if site.author.content_handle and site.author.content_handle != "" %}
+          <a href="{{ site.author.content_url }}">{{ site.author.content_handle }}</a>
+          {%- endif %}
+          <a href="mailto:{{ site.author.email }}">Email</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section data-room="Services" id="services">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div><span class="label">What I build</span><h2>Six kinds of work</h2></div>
+        <p>Most projects are one of these, or two stuck together. If yours isn't on the list, ask anyway.</p>
+      </div>
+      <div class="cells reveal">
+        <div class="cell"><span class="cell-idx">A</span><h3>Lead &amp; call automation</h3><p>Missed calls texted back, follow-ups sent, review requests out the door. The admin a solo operator never has time for.</p><div class="tags"><span class="tag">Twilio</span><span class="tag">Webhooks</span><span class="tag">FastAPI</span></div></div>
+        <div class="cell"><span class="cell-idx">B</span><h3>Classification models</h3><p>Sorting transactions, tickets or documents into categories, with a confidence score on every prediction so you know what to check.</p><div class="tags"><span class="tag">CatBoost</span><span class="tag">scikit-learn</span><span class="tag">GCP</span></div></div>
+        <div class="cell"><span class="cell-idx">C</span><h3>Trading systems</h3><p>Strategies, screeners and execution bots with hard risk limits written in code and a paper-trading period before any real money.</p><div class="tags"><span class="tag">Alpaca</span><span class="tag">Redis</span><span class="tag">Postgres</span></div></div>
+        <div class="cell"><span class="cell-idx">D</span><h3>LLM agents</h3><p>Claude, OpenAI or Gemini wired into a real process: drafting messages, routing tasks, summarizing. Each call has a fallback for when the API goes down.</p><div class="tags"><span class="tag">Claude API</span><span class="tag">OpenAI API</span><span class="tag">Gemini</span></div></div>
+        <div class="cell"><span class="cell-idx">E</span><h3>Review reports</h3><p>A fixed-price ReviewSignal report in 5 to 7 days: what customers complain about, what they love, and what to fix first. English or Spanish.</p><div class="tags"><span class="tag">NLP</span><span class="tag">BERT</span><span class="tag">EN/ES</span></div></div>
+        <div class="cell"><span class="cell-idx">F</span><h3>Websites &amp; web apps</h3><p>Fast sites and installable apps without a heavy front-end stack. Nine client sites shipped so far.</p><div class="tags"><span class="tag">HTML/CSS/JS</span><span class="tag">Firebase</span><span class="tag">PWA</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CALCULATOR -->
+  <section data-room="Calculator" id="calc">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div><span class="label">Try it</span><h2>What does manual sorting cost?</h2></div>
+        <p>A rough estimate using CoKeeper's tier split. Move the sliders to match your month.</p>
+      </div>
+      <form class="tool reveal" id="calcForm" onsubmit="return false">
+        <div class="tool-in">
+          <div>
+            <div class="field-top"><label for="cTx">Transactions per month</label><output class="num" for="cTx" id="oTx">600</output></div>
+            <input type="range" id="cTx" min="50" max="5000" step="50" value="600">
+          </div>
+          <div>
+            <div class="field-top"><label for="cMin">Minutes per transaction</label><output class="num" for="cMin" id="oMin">1.5</output></div>
+            <input type="range" id="cMin" min="0.5" max="5" step="0.25" value="1.5">
+          </div>
+          <fieldset>
+            <legend>Cost of an hour of review</legend>
+            <div class="seg">
+              <label><input type="radio" name="rate" value="40"><span>$40</span></label>
+              <label><input type="radio" name="rate" value="75" checked><span>$75</span></label>
+              <label><input type="radio" name="rate" value="120"><span>$120</span></label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>What happens to green-tier items</legend>
+            <div class="seg">
+              <label><input type="radio" name="mode" value="auto" checked><span>Auto-import</span></label>
+              <label><input type="radio" name="mode" value="glance"><span>Quick glance</span></label>
+            </div>
+          </fieldset>
+        </div>
+        <div class="tool-out" aria-live="polite">
+          <div class="results">
+            <div><span>Manual hours / mo</span><b class="num" id="kManual">15.0</b></div>
+            <div><span>With tiers</span><b class="num" id="kAuto">6.2</b></div>
+            <div class="hl"><span>Hours back / mo</span><b class="num" id="kSaved">8.9</b></div>
+            <div class="hl"><span>Saved / yr</span><b class="num" id="kMoney">$7,965</b></div>
+          </div>
+          <svg viewBox="0 0 400 120" role="img" aria-labelledby="dTitle">
+            <title id="dTitle">Bar diagram: share of transactions auto-imported versus sent to review</title>
+            <text x="0" y="12" fill="#707070" font-size="9" letter-spacing="2" font-family="Inter, sans-serif">EVERY TRANSACTION, REVIEWED BY HAND</text>
+            <rect x="0.5" y="22" width="399" height="22" fill="#1E1E1E" stroke="#2E2E2E"/>
+            <text x="0" y="72" fill="#707070" font-size="9" letter-spacing="2" font-family="Inter, sans-serif">AFTER CONFIDENCE TIERS</text>
+            <rect id="barGreen" x="0" y="82" width="236" height="22" fill="#D08A4E"/>
+            <rect id="barRev" x="236" y="82" width="164" height="22" fill="#1E1E1E" stroke="#2E2E2E"/>
+            <text id="lblGreen" x="6" y="97" fill="#0A0A0A" font-size="9" font-weight="600" font-family="Inter, sans-serif">GREEN 59% &#183; AUTO</text>
+            <text x="394" y="97" text-anchor="end" fill="#A3A3A3" font-size="9" font-family="Inter, sans-serif">REVIEW 41%</text>
+          </svg>
+          <p class="fine">Assumes about 59% of items land in the green tier, as in CoKeeper's production data, and that a quick glance takes 15% of the full review time. Your data will be different. That's what a first call is for.</p>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- TABS -->
+  <section data-room="Measured" id="stack">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div><span class="label">By the numbers</span><h2>Measured, not claimed</h2></div>
+        <p>A few of the numbers behind the build logs. Use the arrow keys to switch tabs.</p>
+      </div>
+      <div class="reveal" id="tabs">
+        <div class="tablist" role="tablist" aria-label="Project measurements">
+          <button class="tab" role="tab" id="t-ck" aria-controls="p-ck" aria-selected="true">CoKeeper tiers</button>
+          <button class="tab" role="tab" id="t-pt" aria-controls="p-pt" aria-selected="false" tabindex="-1">Pintona Lighthouse</button>
+          <button class="tab" role="tab" id="t-st" aria-controls="p-st" aria-selected="false" tabindex="-1">Project status</button>
+        </div>
+        <div class="panel" role="tabpanel" id="p-ck" aria-labelledby="t-ck" tabindex="0">
+          <p>Accuracy by confidence tier. The point isn't that every tier is accurate. It's that the model knows which tier it's in, so the 56% predictions never get auto-imported.</p>
+          <ul class="meters">
+            <li><div class="meter-top"><span>Green &middot; &ge;80% confidence</span><span class="num">99.2%</span></div><div class="bar"><i data-w="99.2"></i></div></li>
+            <li><div class="meter-top"><span>Yellow &middot; 50&ndash;80%</span><span class="num">94.8%</span></div><div class="bar"><i data-w="94.8"></i></div></li>
+            <li><div class="meter-top"><span>Red &middot; under 50%</span><span class="num">56.3%</span></div><div class="bar"><i data-w="56.3"></i></div></li>
+            <li><div class="meter-top"><span>Share of transactions landing green</span><span class="num">59%</span></div><div class="bar"><i data-w="59"></i></div></li>
+          </ul>
+        </div>
+        <div class="panel" role="tabpanel" id="p-pt" aria-labelledby="t-pt" tabindex="0" hidden>
+          <p>What you get from skipping the framework: a vanilla-JS PWA with no bundle to download before the app can start.</p>
+          <ul class="meters">
+            <li><div class="meter-top"><span>Performance</span><span class="num">97</span></div><div class="bar"><i data-w="97"></i></div></li>
+            <li><div class="meter-top"><span>Accessibility</span><span class="num">100</span></div><div class="bar"><i data-w="100"></i></div></li>
+            <li><div class="meter-top"><span>Best practices</span><span class="num">96</span></div><div class="bar"><i data-w="96"></i></div></li>
+          </ul>
+        </div>
+        <div class="panel" role="tabpanel" id="p-st" aria-labelledby="t-st" tabindex="0" hidden>
+          <p>Where the ten builds in the log stand right now, counted honestly. Paper-validated means it works but isn't trading real money.</p>
+          <ul class="meters">
+            <li><div class="meter-top"><span>Live in production</span><span class="num">7 of 10</span></div><div class="bar"><i data-w="70"></i></div></li>
+            <li><div class="meter-top"><span>In build</span><span class="num">2 of 10</span></div><div class="bar"><i data-w="20"></i></div></li>
+            <li><div class="meter-top"><span>Paper-validated, waiting on the exchange</span><span class="num">1 of 10</span></div><div class="bar"><i data-w="10"></i></div></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section data-room="Process" id="process">
+    <div class="wrap process">
+      <div class="process-head reveal">
+        <span class="label">Process</span>
+        <h2>From a manual task to a system you trust</h2>
+        <p>Same order every time. The safety work happens early, not after something has already gone wrong.</p>
+      </div>
+      <div class="steps-wrap" id="steps">
+        <span class="steps-fill" id="stepsFill" aria-hidden="true"></span>
+        <ol class="steps">
+          <li class="step"><span class="step-n num">Step 01</span><h3>Watch the manual version</h3><p>I sit with whoever does the task now and write down every decision they make, including the ones they make without thinking about it.</p></li>
+          <li class="step"><span class="step-n num">Step 02</span><h3>List what can go wrong</h3><p>Before writing features, I write down the failures: bad data, a dead API, a wrong prediction that looks confident. Each one gets a check.</p></li>
+          <li class="step"><span class="step-n num">Step 03</span><h3>Ship the smallest working loop</h3><p>One path from input to output, running on real data on a schedule. It's ugly, but it runs every day.</p></li>
+          <li class="step"><span class="step-n num">Step 04</span><h3>Add confidence and fallbacks</h3><p>Every output gets a score. Low-confidence results go to a person. Failed calls fall back to something safe and log it.</p></li>
+          <li class="step"><span class="step-n num">Step 05</span><h3>Run it on paper first</h3><p>Paper trades, a review queue or a shadow run next to the manual process, until it meets criteria we agreed on up front.</p></li>
+          <li class="step"><span class="step-n num">Step 06</span><h3>Hand over with eyes on it</h3><p>Alerts on every action and failure, logs you can read, and a write-up like the ones on this page.</p></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS CAROUSEL -->
+  <section data-room="Work" id="work">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div><span class="label">Selected work</span><h2>At a glance</h2></div>
+        <div class="car-ctrl">
+          <button class="icon-btn" type="button" id="prev" aria-label="Previous project"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M9 2 4 7l5 5" fill="none" stroke="currentColor"/></svg></button>
+          <button class="icon-btn" type="button" id="next" aria-label="Next project"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="m5 2 5 5-5 5" fill="none" stroke="currentColor"/></svg></button>
+        </div>
+      </div>
+      <div class="track reveal" id="track" tabindex="0" role="region" aria-label="Projects, scroll horizontally">
+        {%- for post in site.posts %}
+        <article class="card">
+          <div class="card-vis">{% if post.image %}<img src="{{ post.image | relative_url }}" alt="" loading="lazy">{% else %}{% include card-art.html slug=post.slug %}{% endif %}</div>
+          <div class="card-body"><span class="tag">{{ post.status | default: "Project" }}</span><h3><a href="{{ post.url | relative_url }}">{{ post.short | default: post.title }}</a></h3><p>{{ post.excerpt | strip_html | truncatewords: 22 }}</p>
+          {%- if post.specs %}
+          <div class="specs">{% for s in post.specs limit: 3 %}<div><span>{{ s[0] }}</span><b class="num">{{ s[1] }}</b></div>{% endfor %}</div>
+          {%- endif %}</div>
+        </article>
+        {%- endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS (placeholders) -->
+  <section data-room="Feedback" id="feedback">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div><span class="label">Feedback</span><h2>What people say</h2></div>
+        <p><span class="ph">Placeholder section.</span> Swap these cards for real quotes from clients or collaborators before going live. Delete the section if you don't have any yet.</p>
+      </div>
+    </div>
+    <div class="marquee reveal">
+      <div class="marquee-track">
+        <blockquote class="quote"><p><span class="ph">[Real quote goes here.]</span> One or two sentences on what changed for them after the system shipped.</p><footer>[Name] &middot; [Role, Company]</footer></blockquote>
+        <blockquote class="quote"><p><span class="ph">[Real quote goes here.]</span> Ideally a specific result: hours saved, errors caught, a process that now runs itself.</p><footer>[Name] &middot; [Role, Company]</footer></blockquote>
+        <blockquote class="quote"><p><span class="ph">[Real quote goes here.]</span> A collaborator or teammate on what working with you was like.</p><footer>[Name] &middot; [Role, Company]</footer></blockquote>
+        <blockquote class="quote"><p><span class="ph">[Real quote goes here.]</span> Keep it in their words. Short is fine.</p><footer>[Name] &middot; [Role, Company]</footer></blockquote>
+        <blockquote class="quote" aria-hidden="true"><p><span class="ph">[Real quote goes here.]</span> One or two sentences on what changed for them after the system shipped.</p><footer>[Name] &middot; [Role, Company]</footer></blockquote>
+        <blockquote class="quote" aria-hidden="true"><p><span class="ph">[Real quote goes here.]</span> Ideally a specific result: hours saved, errors caught, a process that now runs itself.</p><footer>[Name] &middot; [Role, Company]</footer></blockquote>
+        <blockquote class="quote" aria-hidden="true"><p><span class="ph">[Real quote goes here.]</span> A collaborator or teammate on what working with you was like.</p><footer>[Name] &middot; [Role, Company]</footer></blockquote>
+        <blockquote class="quote" aria-hidden="true"><p><span class="ph">[Real quote goes here.]</span> Keep it in their words. Short is fine.</p><footer>[Name] &middot; [Role, Company]</footer></blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section data-room="FAQ" id="faq">
+    <div class="wrap">
+      <div class="sec-head reveal"><div><span class="label">FAQ</span><h2>Common questions</h2></div></div>
+      <div class="faq reveal">
+        <details><summary>What kind of projects are a good fit?</summary><p>Anything repetitive where the data is a bit messy: categorizing, screening, summarizing, routing. If someone on your team does the same steps every week and hates it, that's usually a good fit.</p></details>
+        <details><summary>Will an AI system make mistakes?</summary><p>Yes, so I build for it. Every prediction carries a confidence score, low-confidence results go to a person, and the system logs what it did and why. You decide where the line for "trust it" sits.</p></details>
+        <details><summary>Do I need to change the tools we already use?</summary><p>Usually not. Most of my work reads from and writes to what you already have: QuickBooks exports, spreadsheets, a Telegram or Discord channel, your database.</p></details>
+        <details><summary>Where do the systems run?</summary><p>In Docker on whatever fits the job: GCP Cloud Run, a small VPS or your own server. You get the code and the deployment setup.</p></details>
+        <details><summary>Do you work remotely?</summary><p>Yes. I'm based in Puerto Rico and work with people anywhere. Calls are on Atlantic Time, which overlaps with US Eastern business hours.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section data-room="Contact" id="contact">
+    <div class="wrap contact">
+      <div class="reveal">
+        <span class="label">Contact</span>
+        <h2>Tell me what you do by hand.</h2>
+        <p style="color: var(--mid); max-width: 420px">Three quick questions. I'll reply within two working days with whether I can help and what I'd build first.</p>
+        <ul class="contact-lines">
+          <li><span>Email</span><a href="mailto:{{ site.author.email }}">{{ site.author.email }}</a></li>
+          <li><span>GitHub</span><a href="https://github.com/{{ site.author.github }}">github.com/{{ site.author.github }}</a></li>
+          <li><span>LinkedIn</span><a href="https://www.linkedin.com/in/{{ site.author.linkedin }}">{{ site.author.name }}</a></li>
+          {%- if site.author.content_handle and site.author.content_handle != "" %}
+          <li><span>Posts</span><a href="{{ site.author.content_url }}">{{ site.author.content_handle }}</a></li>
+          {%- endif %}
+          <li><span>RSS</span><a href="{{ '/feed.xml' | relative_url }}">Build log feed</a></li>
+        </ul>
+        {% include newsletter.html id="contact" %}
+      </div>
+      <div class="form reveal" id="form">
+        <div id="formSteps">
+          <div class="form-prog"><span id="fLabel">Step 1 of 3</span><span id="fName">The work</span></div>
+          <div class="form-bar" aria-hidden="true"><i id="fBar"></i></div>
+          <form id="cform" novalidate>
+            <fieldset class="fstep" data-step="1">
+              <legend class="sr-only">Type of project</legend>
+              <h3>What do you need?</h3>
+              <div class="opts">
+                <label class="opt"><input type="radio" name="kind" value="Workflow automation" checked><span>Automate a workflow</span></label>
+                <label class="opt"><input type="radio" name="kind" value="ML / classification"><span>A model that sorts or predicts</span></label>
+                <label class="opt"><input type="radio" name="kind" value="Trading / market data"><span>Trading or market data</span></label>
+                <label class="opt"><input type="radio" name="kind" value="Website"><span>A website</span></label>
+                <label class="opt"><input type="radio" name="kind" value="Something else"><span>Something else</span></label>
+              </div>
+            </fieldset>
+            <fieldset class="fstep" data-step="2" hidden>
+              <legend class="sr-only">Project details</legend>
+              <h3>Describe the manual version</h3>
+              <div class="fgroup"><label for="fDesc">What happens today, step by step</label><textarea id="fDesc" name="desc" placeholder="Every Monday someone exports bank transactions and assigns each one to a GL account..."></textarea></div>
+              <div class="fgroup"><label for="fWhen">When would you like it running?</label>
+                <select id="fWhen" name="when"><option>No rush</option><option>This quarter</option><option>This month</option></select></div>
+            </fieldset>
+            <fieldset class="fstep" data-step="3" hidden>
+              <legend class="sr-only">Your contact details</legend>
+              <h3>Where do I reply?</h3>
+              <div class="fgroup"><label for="fN">Your name</label><input id="fN" name="name" autocomplete="name" required aria-describedby="eN"><p class="err" id="eN"></p></div>
+              <div class="fgroup"><label for="fE">Email</label><input id="fE" name="email" type="email" autocomplete="email" required aria-describedby="eE"><p class="err" id="eE"></p></div>
+            </fieldset>
+            <div class="form-nav">
+              <button type="button" class="btn btn-ghost" id="fBack" disabled>Back</button>
+              <button type="submit" class="btn btn-primary" id="fNext">Continue</button>
+            </div>
+          </form>
+        </div>
+        <div class="done" id="done" hidden tabindex="-1">
+          <span class="label">Almost there</span>
+          <h3 style="margin-top: 14px">Thanks, <span id="dName"></span>.</h3>
+          <p>Your email app should have opened with your answers filled in. Hit send and it reaches me directly. If it didn't open, write to <a href="mailto:dashakid@live.com" style="color: var(--accent)">dashakid@live.com</a>.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
 
-<!-- ================= DRAWER SHELL ================= -->
-<div class="drawer-veil" id="dVeil"></div>
-<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="dTitle" aria-hidden="true">
-  <div class="drawer-head">
-    <div>
-      <span class="label dk" id="dKicker">System Inspector</span>
-      <h4 id="dTitle"></h4>
-    </div>
-    <button class="drawer-close" id="dClose" aria-label="Close inspector">✕</button>
-  </div>
-  <div class="drawer-body" id="dBody"></div>
-</aside>
-
-<!-- ================= DRAWER TEMPLATES ================= -->
-
-<template id="tpl-trading">
-  <div class="dsec">
-    <span class="label">Strategy Flow</span>
-    <div class="flow">
-      <div class="fnode">ALPACA WEBSOCKET <small>Nasdaq-100 quotes + daily bars, auto-reconnect w/ backoff</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">REDIS CACHE + POSTGRES <small>hot tick fan-out · 126 days of price history</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">CATBOOST MOMENTUM SCORER <small>ranks the universe on 126-day lookback features</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">MONTHLY REBALANCE PLANNER <small>target weights · turnover-aware rotation</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">RISK GATES → ALPACA PAPER <small>crash guard · sector cap · idempotent orders, full audit trail</small></div>
-    </div>
-  </div>
-  <div class="dsec">
-    <span class="label">Risk Management Rules</span>
-    <div class="dlist">
-      <div class="row"><b>Crash Guard</b><span>Regime filter — when the index breaks trend, the book rotates to cash instead of chasing momentum down.</span></div>
-      <div class="row"><b>Sector Cap</b><span>Concentration ceiling so a hot sector can't own the whole portfolio.</span></div>
-      <div class="row"><b>Paper First</b><span>Live on Alpaca paper since April 2026 — the real execution path, zero live capital until the track record earns it.</span></div>
-      <div class="row"><b>Monthly Cadence</b><span>Rebalance is scheduled, not reactive — no intraday overtrading.</span></div>
-    </div>
-  </div>
-  <div class="dsec">
-    <span class="label">Live Execution Log · simulated</span>
-    <div class="dlog" data-role="tradelog"></div>
-  </div>
-</template>
-
-<template id="tpl-cokeeper">
-  <div class="dsec">
-    <span class="label">Pipeline</span>
-    <div class="flow">
-      <div class="fnode">BANK CSV INGEST <small>raw exports, any institution format</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">MERCHANT STRING CLEANER <small>strips txn IDs, locations, cryptic abbreviations</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">5-LEVEL VENDOR CASCADE <small>exact → alias → fuzzy → pattern → ML fallback</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">DUAL-MODEL CLASSIFIER <small>CatBoost + scikit-learn ensemble</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">CONFIDENCE TIERING → QUICKBOOKS EXPORT <small>green auto-imports, yellow spot-checks, red for review</small></div>
-    </div>
-  </div>
-  <div class="dsec">
-    <span class="label">CatBoost Confidence Metrics</span>
-    <div class="metric"><div class="mrow"><span>Green tier · ≥80% conf</span><span class="mval">99.2% acc</span></div><div class="mbar"><div class="mfill g" data-w="99"></div></div></div>
-    <div class="metric"><div class="mrow"><span>Yellow tier · 50–80%</span><span class="mval">94.8% acc</span></div><div class="mbar"><div class="mfill y" data-w="95"></div></div></div>
-    <div class="metric"><div class="mrow"><span>Red tier · &lt;50%</span><span class="mval">56.3% acc</span></div><div class="mbar"><div class="mfill r" data-w="56"></div></div></div>
-    <div class="metric"><div class="mrow"><span>Share landing green</span><span class="mval">59%</span></div><div class="mbar"><div class="mfill" data-w="59"></div></div></div>
-  </div>
-  <div class="dsec">
-    <span class="label">Live Classification · simulated</span>
-    <div class="ledger">
-      <div class="ledger-head"><span>Merchant string</span><span>GL classification</span></div>
-      <div data-role="ckbody"></div>
-    </div>
-    <button class="replay-btn" type="button" data-role="ckreplay">Replay feed</button>
-  </div>
-</template>
-
-<template id="tpl-misscall">
-  <div class="dsec">
-    <span class="label">Call Routing Workflow</span>
-    <div class="flow">
-      <div class="fnode">INBOUND CALL → NO ANSWER <small>missed, busy, or after-hours</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">TWILIO STATUS WEBHOOK <small>fires on call completion with disposition</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">CALLER LOOKUP <small>CRM match · prior history · spam filter</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">AGENT DRAFTS SMS <small>context-aware, business-voice, &lt;10s from missed call</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">FOLLOW-UP SEQUENCE <small>polite cadence until booked or opted out</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">GOOGLE REVIEW REQUEST <small>automated after the job closes — reviews compound</small></div>
-    </div>
-  </div>
-  <div class="dsec">
-    <span class="label">Twilio Hook Integration</span>
-    <div class="dlist">
-      <div class="row"><b>POST /voice</b><span>TwiML answer flow — ring, voicemail fallback, whisper.</span></div>
-      <div class="row"><b>POST /status</b><span>statusCallback → disposition classifier → rescue trigger.</span></div>
-      <div class="row"><b>POST /sms</b><span>Two-way thread — replies routed back through the agent.</span></div>
-      <div class="row"><b>Pricing</b><span>Setup fee plus monthly retainer — built for solo operators who can't answer every call.</span></div>
-    </div>
-  </div>
-  <div class="dsec">
-    <span class="label">Prompt / Response Structure</span>
-    <div class="chat">
-      <div class="bubble sysmsg">SYSTEM · You are the front desk for {business}. A caller at {number} just went unanswered ({disposition}). History: {crm_context}. Draft one SMS: warm, specific, under 240 chars, one clear next step. Never invent availability.</div>
-      <div class="bubble out"><span class="who">Agent → caller</span>Hi! You just called Meridian Dental — sorry we missed you. Want me to grab you a cleaning slot this week? Reply with a day that works and I'll lock it in.</div>
-      <div class="bubble in"><span class="who">Caller</span>thursday afternoon?</div>
-      <div class="bubble out"><span class="who">Agent → caller</span>Thursday 2:40pm is open with Dr. Reyes. Should I book it under this number?</div>
-    </div>
-  </div>
-</template>
-
-<template id="tpl-pintona">
-  <div class="dsec">
-    <span class="label">UI Stack Breakdown</span>
-    <div class="dlist">
-      <div class="row"><b>Frontend</b><span>No-build vanilla JS PWA — zero framework, zero bundler, instant deploys.</span></div>
-      <div class="row"><b>Backend</b><span>Firebase Auth, Firestore, and Storage — serverless, per-user security rules.</span></div>
-      <div class="row"><b>AI Layer</b><span>Gemini 2.5 Flash for honest outfit feedback on wardrobe photos.</span></div>
-      <div class="row"><b>i18n</b><span>Full English / Spanish / Vietnamese translation layer.</span></div>
-      <div class="row"><b>Install</b><span>Service-worker PWA — installable on iOS and Android home screens.</span></div>
-    </div>
-  </div>
-  <div class="dsec">
-    <span class="label">Deployment Pipeline</span>
-    <div class="flow">
-      <div class="fnode">GIT PUSH → MAIN <small>single source of truth</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">CI CHECKS <small>lint · asset budget · rules validation</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">FIREBASE HOSTING DEPLOY <small>atomic release, instant rollback</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">SERVICE WORKER REFRESH <small>versioned cache, offline-first shell</small></div>
-    </div>
-  </div>
-  <div class="dsec">
-    <span class="label">Performance Benchmarks</span>
-    <div class="metric"><div class="mrow"><span>Lighthouse Performance</span><span class="mval">97</span></div><div class="mbar"><div class="mfill g" data-w="97"></div></div></div>
-    <div class="metric"><div class="mrow"><span>Accessibility</span><span class="mval">100</span></div><div class="mbar"><div class="mfill g" data-w="100"></div></div></div>
-    <div class="metric"><div class="mrow"><span>Best Practices</span><span class="mval">96</span></div><div class="mbar"><div class="mfill g" data-w="96"></div></div></div>
-    <div class="metric"><div class="mrow"><span>Time to Interactive</span><span class="mval">~1.2s</span></div><div class="mbar"><div class="mfill" data-w="88"></div></div></div>
-  </div>
-</template>
-
-<template id="tpl-coldemail">
-  <div class="dsec">
-    <span class="label">Agent Loop</span>
-    <div class="flow">
-      <div class="fnode">PROSPECT SOURCING <small>list building + enrichment filters</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">PERSONALIZATION <small>opener drafted per lead from site &amp; profile context</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">SEQUENCER <small>warmed schedule · throttled sends · timezone-aware</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">INBOX WATCHER <small>reply detection pauses the sequence instantly</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">HANDOFF <small>interested replies surfaced for a human close</small></div>
-    </div>
-  </div>
-  <div class="dsec">
-    <span class="label">Design Notes</span>
-    <div class="dlist">
-      <div class="row"><b>Autonomous</b><span>Runs unattended on EC2 — sourcing, sending, and monitoring without a babysitter.</span></div>
-      <div class="row"><b>Deliverability</b><span>Warmup ramps and send throttles protect the domain before volume ever scales.</span></div>
-      <div class="row"><b>Stateful</b><span>Every lead tracked through the funnel — no double-sends, no dropped threads.</span></div>
-    </div>
-  </div>
-</template>
-
-<template id="tpl-kakashi">
-  <div class="dsec">
-    <span class="label">Copy-Trade Flow</span>
-    <div class="flow">
-      <div class="fnode">TOP-WALLET TRACKER <small>Polymarket leaderboard + position ingest</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">CONVICTION FILTER <small>signal only when a bet is ≥10% of that wallet's 7-day volume</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">RISK GATE STACK <small>confidence thresholds · exposure caps</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">CLOB EXECUTION <small>order placement against Polymarket's book</small></div>
-    </div>
-  </div>
-  <div class="dsec">
-    <span class="label">Postmortem</span>
-    <div class="dlist">
-      <div class="row"><b>Validated</b><span>Paper trading confirmed the copy-strategy edge end-to-end on EC2.</span></div>
-      <div class="row"><b>Blocked</b><span>An exchange-side CLOB order version mismatch rejected live orders — a bug on their end, not the strategy's.</span></div>
-      <div class="row"><b>Status</b><span>Infra intact and redeployable; live trading waits on the exchange fix.</span></div>
-    </div>
-  </div>
-</template>
-
-<template id="tpl-reviewsignal">
-  <div class="dsec">
-    <span class="label">NLP Pipeline</span>
-    <div class="flow">
-      <div class="fnode">REVIEW INGEST <small>Amazon · Shopify · Trustpilot · MercadoLibre</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">LANGUAGE DETECT + ROUTE <small>per-review model selection</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">SENTIMENT <small>VADER for English · multilingual BERT for Spanish</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">NMF TOPIC MODELING <small>top recurring complaints &amp; praised features</small></div>
-      <div class="fjoin"></div>
-      <div class="fnode">CLIENT REPORT OUT <small>3–5 quantified recommendations · shareable HTML</small></div>
-    </div>
-  </div>
-  <div class="dsec">
-    <span class="label">Engagement Model</span>
-    <div class="dlist">
-      <div class="row"><b>Fixed Scope</b><span>Fixed price, 5–7 day delivery — a productized service, not an open-ended engagement.</span></div>
-      <div class="row"><b>Bilingual</b><span>English and Spanish handled natively, not via translation.</span></div>
-      <div class="row"><b>Actionable</b><span>Themes ranked by frequency × sentiment severity, not raw counts.</span></div>
-    </div>
-  </div>
-</template>
+{% include footer.html %}
 
 <script>
 (function () {
-  "use strict";
-  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  document.documentElement.classList.add('js');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
 
-  /* ============================================================
-     1 · LIQUID PARTICLE FIELD — rising bubbles, cursor-reactive
-     ============================================================ */
-  var canvas = document.getElementById("field");
-  var ctx = canvas.getContext("2d");
-  var W = 0, H = 0, DPR = 1;
-  var particles = [];
-  var mouse = { x: -9999, y: -9999 };
-  var running = true;
-
-  function sizeCanvas() {
-    DPR = Math.min(window.devicePixelRatio || 1, 2);
-    W = window.innerWidth;
-    H = window.innerHeight;
-    canvas.width = W * DPR;
-    canvas.height = H * DPR;
-    canvas.style.width = W + "px";
-    canvas.style.height = H + "px";
-    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
-    seed();
+  /* scroll progress + nav + process line */
+  var bar = $('.progress'), nav = $('#nav');
+  function onScroll() {
+    var h = document.documentElement.scrollHeight - innerHeight;
+    bar.style.width = (h > 0 ? scrollY / h * 100 : 0) + '%';
+    nav.classList.toggle('scrolled', scrollY > 40);
+    fillSteps();
   }
+  addEventListener('scroll', onScroll, { passive: true });
 
-  function seed() {
-    var count = Math.min(110, Math.floor((W * H) / 16000));
-    particles = [];
-    for (var i = 0; i < count; i++) {
-      particles.push({
-        x: Math.random() * W,
-        y: Math.random() * H,
-        vx: 0,
-        vy: 0,
-        rise: 0.06 + Math.random() * 0.16,     // buoyancy
-        sway: 0.2 + Math.random() * 0.5,       // sideways amplitude
-        ph: Math.random() * Math.PI * 2,       // sway phase
-        r: 0.6 + Math.random() * 1.5,
-        teal: Math.random() < 0.35,
-        tw: Math.random() * Math.PI * 2
+  /* cursor spotlight */
+  var spot = $('.spotlight');
+  addEventListener('pointermove', function (e) {
+    spot.style.setProperty('--mx', e.clientX + 'px');
+    spot.style.setProperty('--my', e.clientY + 'px');
+  }, { passive: true });
+
+  /* reveal: movement only, content is never hidden */
+  var rio = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); rio.unobserve(e.target); } });
+  }, { rootMargin: '0px 0px -8% 0px' });
+  $$('.reveal').forEach(function (el) { rio.observe(el); });
+
+  /* section indicator + active nav link */
+  var roomName = $('#roomName'), links = $$('.nav-links a');
+  var sio = new IntersectionObserver(function (es) {
+    es.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      roomName.textContent = e.target.dataset.room;
+      var id = e.target.id;
+      links.forEach(function (a) {
+        var on = a.getAttribute('href') === '#' + id;
+        a.classList.toggle('active', on);
+        if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
       });
-    }
+    });
+  }, { rootMargin: '-45% 0px -50% 0px' });
+  $$('[data-room]').forEach(function (s) { sio.observe(s); });
+
+  /* stat counters: the real numbers are already in the HTML */
+  if (!reduce) {
+    var cio = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        cio.unobserve(e.target);
+        var el = e.target, target = parseFloat(el.dataset.count), dec = +(el.dataset.dec || 0);
+        var small = el.querySelector('small'), suffix = small ? small.outerHTML : '';
+        var t0 = performance.now();
+        (function tick(t) {
+          var p = Math.min(1, Math.max(0, (t - t0) / 1400)), v = target * (1 - Math.pow(1 - p, 3));
+          el.innerHTML = v.toFixed(dec) + suffix;
+          if (p < 1) requestAnimationFrame(tick);
+        })(t0);
+      });
+    }, { threshold: .6 });
+    $$('[data-count]').forEach(function (el) { cio.observe(el); });
   }
 
-  var LINK_D2 = 110 * 110;
+  /* blog filter + search */
+  var posts = $$('#posts .post'), q = $('#q'), empty = $('#empty'), cat = 'all';
+  function filterPosts() {
+    var term = q.value.trim().toLowerCase(), shown = 0;
+    posts.forEach(function (p) {
+      var hay = (p.textContent + ' ' + p.dataset.text).toLowerCase();
+      var ok = (cat === 'all' || p.dataset.cat.split(' ').indexOf(cat) > -1) && (!term || hay.indexOf(term) > -1);
+      p.hidden = !ok; if (ok) shown++;
+    });
+    empty.style.display = shown ? 'none' : 'block';
+  }
+  $$('.chip').forEach(function (c) {
+    c.addEventListener('click', function () {
+      $$('.chip').forEach(function (o) { o.setAttribute('aria-pressed', o === c ? 'true' : 'false'); });
+      cat = c.dataset.filter; filterPosts();
+    });
+  });
+  q.addEventListener('input', filterPosts);
 
-  function tick(t) {
-    if (!running) return;
+  /* hero canvas: risk gate simulation */
+  var cv = $('#gate'), ctx = cv.getContext('2d'), frame = $('#frame');
+  var modes = [{ name: 'Loose', thr: .5 }, { name: 'Default', thr: .6 }, { name: 'Strict', thr: .8 }];
+  var mi = 1, W = 0, H = 0, parts = [], seen = 0, passed = 0, blocked = 0, spawnT = 0, raf = null;
+  var gates = [{ x: .3, n: 'CONF' }, { x: .48, n: 'EDGE' }, { x: .66, n: 'EXPO' }, { x: .84, n: 'DUPE' }];
+  var R = { seen: $('#rSeen'), pass: $('#rPass'), block: $('#rBlock'), rate: $('#rRate') }, modeTag = $('#modeTag');
+
+  function size() {
+    var dpr = Math.min(2, window.devicePixelRatio || 1), r = cv.getBoundingClientRect();
+    W = r.width; H = r.height;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    if (reduce) staticFrame(); else draw();
+  }
+  function spawn() {
+    parts.push({ x: -.01, y: .14 + Math.random() * .58, v: .0018 + Math.random() * .0016,
+      c: Math.random() * .5 + .45, e: Math.random() * .09, ex: Math.random() > .08, du: Math.random() > .07,
+      g: 0, dead: false, fade: 1 });
+  }
+  function check(p, i) {
+    if (i === 0) return p.c >= modes[mi].thr;
+    if (i === 1) return p.e >= .03;
+    if (i === 2) return p.ex;
+    return p.du;
+  }
+  function step() {
+    spawnT++; if (spawnT % 9 === 0) spawn();
+    parts.forEach(function (p) {
+      if (p.dead) { p.fade -= .03; p.y += .002; return; }
+      p.x += p.v;
+      if (p.g < gates.length && p.x >= gates[p.g].x) {
+        if (check(p, p.g)) p.g++;
+        else { p.dead = true; blocked++; seen++; }
+      }
+      if (!p.dead && p.x > 1.02) { p.fade = 0; passed++; seen++; }
+    });
+    parts = parts.filter(function (p) { return p.fade > 0; });
+  }
+  function draw() {
     ctx.clearRect(0, 0, W, H);
-
-    var i, j, p, q;
-    for (i = 0; i < particles.length; i++) {
-      p = particles[i];
-
-      // cursor repulsion — liquid displacement
-      var dx = p.x - mouse.x, dy = p.y - mouse.y;
-      var d2 = dx * dx + dy * dy;
-      if (d2 < 22500 && d2 > 0.01) {
-        var f = (1 - d2 / 22500) * 0.06;
-        var d = Math.sqrt(d2);
-        p.vx += (dx / d) * f;
-        p.vy += (dy / d) * f;
-      }
-
-      p.vx *= 0.97; p.vy *= 0.97;
-      p.x += p.vx + Math.sin(t * 0.0004 + p.ph) * p.sway * 0.14;
-      p.y += p.vy - p.rise;
-
-      if (p.y < -12) { p.y = H + 12; p.x = Math.random() * W; }
-      if (p.x < -20) p.x = W + 20; else if (p.x > W + 20) p.x = -20;
-
-      var a = 0.24 + 0.18 * Math.sin(t * 0.0007 + p.tw);
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, 6.2832);
-      ctx.fillStyle = p.teal
-        ? "rgba(20, 184, 166, " + (a * 0.95).toFixed(3) + ")"
-        : "rgba(228, 237, 235, " + (a * 0.45).toFixed(3) + ")";
-      ctx.fill();
-    }
-
-    // constellation links near cursor only
-    ctx.lineWidth = 0.5;
-    for (i = 0; i < particles.length; i++) {
-      p = particles[i];
-      var pdx = p.x - mouse.x, pdy = p.y - mouse.y;
-      if (pdx * pdx + pdy * pdy > 48400) continue;
-      for (j = i + 1; j < particles.length; j++) {
-        q = particles[j];
-        var lx = p.x - q.x, ly = p.y - q.y;
-        var ld2 = lx * lx + ly * ly;
-        if (ld2 < LINK_D2) {
-          ctx.strokeStyle = "rgba(20, 184, 166, " + (0.1 * (1 - ld2 / LINK_D2)).toFixed(3) + ")";
-          ctx.beginPath();
-          ctx.moveTo(p.x, p.y);
-          ctx.lineTo(q.x, q.y);
-          ctx.stroke();
-        }
-      }
-    }
-
-    requestAnimationFrame(tick);
-  }
-
-  if (!reduceMotion) {
-    sizeCanvas();
-    requestAnimationFrame(tick);
-    var resizeT;
-    window.addEventListener("resize", function () {
-      clearTimeout(resizeT);
-      resizeT = setTimeout(sizeCanvas, 150);
+    var top = H * .1, bot = H * .74;
+    ctx.font = '500 9px Inter, sans-serif'; ctx.textAlign = 'center';
+    gates.forEach(function (g, i) {
+      var x = Math.round(g.x * W) + .5;
+      ctx.strokeStyle = '#2E2E2E'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(x, top); ctx.lineTo(x, bot); ctx.stroke();
+      ctx.fillStyle = i === 0 ? '#D08A4E' : '#707070';
+      ctx.fillText(i === 0 ? g.n + ' ' + Math.round(modes[mi].thr * 100) : g.n, x, bot + 14);
     });
-    document.addEventListener("visibilitychange", function () {
-      running = !document.hidden;
-      if (running) requestAnimationFrame(tick);
+    parts.forEach(function (p) {
+      var x = p.x * W, y = p.y * H;
+      ctx.globalAlpha = Math.max(0, p.fade);
+      if (p.dead) { ctx.fillStyle = '#707070'; ctx.fillRect(x - 2, y - 2, 4, 4); }
+      else {
+        ctx.fillStyle = '#D08A4E'; ctx.beginPath(); ctx.arc(x, y, 1.5 + p.c * 2.2, 0, 6.283); ctx.fill();
+        ctx.globalAlpha = .18; ctx.fillRect(x - 18, y - .5, 18, 1);
+      }
     });
+    ctx.globalAlpha = 1;
+    R.seen.textContent = seen; R.pass.textContent = passed; R.block.textContent = blocked;
+    R.rate.textContent = (seen ? Math.round(passed / seen * 100) : 0) + '%';
+  }
+  function loop() { step(); draw(); raf = requestAnimationFrame(loop); }
+  function staticFrame() { parts = []; seen = passed = blocked = 0; spawnT = 0; for (var i = 0; i < 900; i++) step(); draw(); }
+  function cycle() {
+    mi = (mi + 1) % modes.length;
+    modeTag.textContent = modes[mi].name + ' · ' + Math.round(modes[mi].thr * 100) + '%';
+    seen = passed = blocked = 0;
+    if (reduce) staticFrame(); else draw();
+  }
+  frame.addEventListener('click', cycle);
+  cv.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); cycle(); } });
+  addEventListener('resize', size);
+  size();
+  if (!reduce) {
+    new IntersectionObserver(function (es) {
+      if (es[0].isIntersecting) { if (!raf) raf = requestAnimationFrame(loop); }
+      else if (raf) { cancelAnimationFrame(raf); raf = null; }
+    }).observe(cv);
   }
 
-  window.addEventListener("pointermove", function (e) {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-  }, { passive: true });
-  window.addEventListener("pointerleave", function () { mouse.x = -9999; mouse.y = -9999; });
-
-  /* ============================================================
-     2 · GLASS CARDS — mouse-position lighting via CSS vars
-     ============================================================ */
-  var glassEls = Array.prototype.slice.call(document.querySelectorAll(".glass"));
-  var lightRaf = null, lastEvt = null;
-  function applyLight() {
-    lightRaf = null;
-    if (!lastEvt) return;
-    var x = lastEvt.clientX, y = lastEvt.clientY;
-    for (var i = 0; i < glassEls.length; i++) {
-      var r = glassEls[i].getBoundingClientRect();
-      if (x >= r.left - 80 && x <= r.right + 80 && y >= r.top - 80 && y <= r.bottom + 80) {
-        glassEls[i].style.setProperty("--mx", (x - r.left) + "px");
-        glassEls[i].style.setProperty("--my", (y - r.top) + "px");
-      }
-    }
+  /* calculator */
+  var cTx = $('#cTx'), cMin = $('#cMin'), GREEN = .59, GLANCE = .15;
+  function calc() {
+    var tx = +cTx.value, mn = +cMin.value;
+    var rate = +$('input[name=rate]:checked').value, mode = $('input[name=mode]:checked').value;
+    $('#oTx').textContent = tx.toLocaleString(); $('#oMin').textContent = mn;
+    var manual = tx * mn / 60;
+    var auto = manual * ((1 - GREEN) + (mode === 'glance' ? GREEN * GLANCE : 0));
+    var saved = manual - auto;
+    $('#kManual').textContent = manual.toFixed(1);
+    $('#kAuto').textContent = auto.toFixed(1);
+    $('#kSaved').textContent = saved.toFixed(1);
+    $('#kMoney').textContent = '$' + Math.round(saved * rate * 12).toLocaleString();
+    $('#lblGreen').textContent = mode === 'glance' ? 'GREEN 59% · GLANCE' : 'GREEN 59% · AUTO';
   }
-  window.addEventListener("pointermove", function (e) {
-    lastEvt = e;
-    if (!lightRaf) lightRaf = requestAnimationFrame(applyLight);
-  }, { passive: true });
+  $('#calcForm').addEventListener('input', calc);
+  $('#calcForm').addEventListener('change', calc);
+  calc();
 
-  /* ============================================================
-     3 · SCROLL REVEAL
-     ============================================================ */
-  var revealEls = document.querySelectorAll(".reveal");
-  if ("IntersectionObserver" in window && !reduceMotion) {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) {
-        if (en.isIntersecting) {
-          en.target.classList.add("in");
-          io.unobserve(en.target);
-        }
-      });
-    }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
-    revealEls.forEach(function (el) { io.observe(el); });
-  } else {
-    revealEls.forEach(function (el) { el.classList.add("in"); });
+  /* tabs */
+  var tabs = $$('[role=tab]');
+  function fillMeters(panel) {
+    var bars = $$('.bar i', panel);
+    bars.forEach(function (i) { i.style.width = '0'; });
+    requestAnimationFrame(function () { requestAnimationFrame(function () {
+      bars.forEach(function (i) { i.style.width = i.dataset.w + '%'; });
+    }); });
   }
-
-  /* ============================================================
-     4 · QUANT SPARKLINES + latency ticker
-     ============================================================ */
-  var SPARK_N = 42;
-  function makeSeries(seedVal) {
-    var s = [], v = seedVal;
-    for (var i = 0; i < SPARK_N; i++) { v += (Math.random() - 0.5) * 2.6; s.push(v); }
-    return s;
+  function select(t, focus) {
+    tabs.forEach(function (o) {
+      var on = o === t;
+      o.setAttribute('aria-selected', on ? 'true' : 'false'); o.tabIndex = on ? 0 : -1;
+      $('#' + o.getAttribute('aria-controls')).hidden = !on;
+    });
+    if (focus) t.focus();
+    fillMeters($('#' + t.getAttribute('aria-controls')));
   }
-  var series = [makeSeries(12), makeSeries(14), makeSeries(13)];
-  var sparkEls = [document.getElementById("spark1"), document.getElementById("spark2"), document.getElementById("spark3")];
-  var valEls = [document.getElementById("val1"), document.getElementById("val2"), document.getElementById("val3")];
-
-  function drawSpark(el, s) {
-    var min = Math.min.apply(null, s), max = Math.max.apply(null, s);
-    var span = (max - min) || 1;
-    var pts = "";
-    for (var i = 0; i < s.length; i++) {
-      pts += ((i / (s.length - 1)) * 200).toFixed(1) + "," + (23 - ((s[i] - min) / span) * 20).toFixed(1) + " ";
-    }
-    el.setAttribute("points", pts.trim());
-  }
-
-  function stepQuant() {
-    for (var k = 0; k < series.length; k++) {
-      var s = series[k];
-      s.push(s[s.length - 1] + (Math.random() - 0.5) * 2.6);
-      s.shift();
-      drawSpark(sparkEls[k], s);
-      if (k < 2) {
-        var pct = ((s[s.length - 1] - s[0]) / Math.max(Math.abs(s[0]), 1)) * 4;
-        var up = pct >= 0;
-        valEls[k].textContent = (up ? "+" : "") + pct.toFixed(2) + "%";
-        valEls[k].className = "quant-val " + (up ? "up" : "down");
-      }
-    }
-    var rebStates = ["T–12d", "T–12d", "monthly", "armed", "T–12d"];
-    valEls[2].textContent = rebStates[Math.floor(Math.random() * rebStates.length)];
-    document.getElementById("latency").textContent = (8 + Math.floor(Math.random() * 14)) + " ms";
-  }
-
-  series.forEach(function (s, i) { drawSpark(sparkEls[i], s); });
-  stepQuant();
-  if (!reduceMotion) setInterval(stepQuant, 900);
-
-  /* ============================================================
-     5 · DRAWER SYSTEM
-     ============================================================ */
-  var veil = document.getElementById("dVeil");
-  var drawer = document.getElementById("drawer");
-  var dBody = document.getElementById("dBody");
-  var dTitle = document.getElementById("dTitle");
-  var dClose = document.getElementById("dClose");
-  var lastFocus = null;
-  var activeTeardown = null;
-
-  var DRAWERS = {
-    trading:      { title: 'Stock Trading <em>Bot</em>', init: initTrading },
-    cokeeper:     { title: 'CoKeeper <em>AI</em>', init: initCokeeper },
-    misscall:     { title: 'Missed-Call <em>Rescue</em>', init: initBars },
-    pintona:      { title: 'Pintona — <em>AI Wardrobe</em>', init: initBars },
-    coldemail:    { title: 'Cold Email <em>Outreach Agent</em>', init: initBars },
-    kakashi:      { title: 'Kakashi — <em>Copy-Trader</em>', init: initBars },
-    reviewsignal: { title: 'Review<em>Signal</em>', init: initBars }
-  };
-
-  function openDrawer(key) {
-    var spec = DRAWERS[key];
-    var tpl = document.getElementById("tpl-" + key);
-    if (!spec || !tpl) return;
-    if (activeTeardown) { activeTeardown(); activeTeardown = null; }
-
-    lastFocus = document.activeElement;
-    dTitle.innerHTML = spec.title;
-    dBody.innerHTML = "";
-    dBody.appendChild(tpl.content.cloneNode(true));
-    dBody.scrollTop = 0;
-
-    veil.classList.add("open");
-    drawer.classList.add("open");
-    drawer.setAttribute("aria-hidden", "false");
-    document.body.style.overflow = "hidden";
-    activeTeardown = spec.init(dBody) || null;
-    dClose.focus();
-  }
-
-  function closeDrawer() {
-    veil.classList.remove("open");
-    drawer.classList.remove("open");
-    drawer.setAttribute("aria-hidden", "true");
-    document.body.style.overflow = "";
-    if (activeTeardown) { activeTeardown(); activeTeardown = null; }
-    if (lastFocus) lastFocus.focus();
-  }
-
-  Array.prototype.forEach.call(document.querySelectorAll("[data-drawer]"), function (btn) {
-    btn.addEventListener("click", function () { openDrawer(btn.getAttribute("data-drawer")); });
+  tabs.forEach(function (t, i) {
+    t.addEventListener('click', function () { select(t); });
+    t.addEventListener('keydown', function (e) {
+      var n = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
+      if (n === undefined) return;
+      e.preventDefault(); select(tabs[(n + tabs.length) % tabs.length], true);
+    });
   });
-  dClose.addEventListener("click", closeDrawer);
-  veil.addEventListener("click", closeDrawer);
-  document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && drawer.classList.contains("open")) closeDrawer();
+  var tio = new IntersectionObserver(function (es) {
+    if (es[0].isIntersecting) { fillMeters($('.panel:not([hidden])')); tio.disconnect(); }
+  }, { threshold: .3 });
+  tio.observe($('#tabs'));
+
+  /* process line */
+  var stepsEl = $('#steps'), fill = $('#stepsFill'), stepEls = $$('.step');
+  function fillSteps() {
+    var r = stepsEl.getBoundingClientRect(), mid = innerHeight / 2;
+    var p = Math.max(0, Math.min(1, (mid - r.top) / r.height));
+    fill.style.height = (p * (r.height - 16)) + 'px';
+    stepEls.forEach(function (s) { s.classList.toggle('lit', s.getBoundingClientRect().top + 12 < mid); });
+  }
+
+  /* carousel */
+  var track = $('#track');
+  function page(dir) {
+    var card = $('.card', track), w = card ? card.getBoundingClientRect().width + 20 : 300;
+    track.scrollBy({ left: dir * w, behavior: reduce ? 'auto' : 'smooth' });
+  }
+  $('#prev').addEventListener('click', function () { page(-1); });
+  $('#next').addEventListener('click', function () { page(1); });
+
+  /* contact form */
+  var cur = 1, names = ['The work', 'Details', 'Your info'];
+  var form = $('#cform'), back = $('#fBack'), next = $('#fNext');
+  function show(n) {
+    cur = n;
+    $$('.fstep', form).forEach(function (f) { f.hidden = +f.dataset.step !== n; });
+    $('#fLabel').textContent = 'Step ' + n + ' of 3';
+    $('#fName').textContent = names[n - 1];
+    $('#fBar').style.width = (n / 3 * 100) + '%';
+    back.disabled = n === 1;
+    next.textContent = n === 3 ? 'Send' : 'Continue';
+  }
+  back.addEventListener('click', function () { if (cur > 1) show(cur - 1); });
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (cur < 3) {
+      show(cur + 1);
+      var first = $('.fstep:not([hidden]) textarea, .fstep:not([hidden]) input', form);
+      if (first) first.focus();
+      return;
+    }
+    var n = $('#fN'), m = $('#fE'), badN = !n.value.trim(), badE = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m.value.trim());
+    $('#eN').textContent = badN ? 'Add your name so I know who I’m writing to.' : '';
+    $('#eE').textContent = badE ? 'That email doesn’t look right.' : '';
+    n.setAttribute('aria-invalid', badN); m.setAttribute('aria-invalid', badE);
+    if (badN || badE) { (badN ? n : m).focus(); return; }
+    var kind = $('input[name=kind]:checked', form).value;
+    var body = 'Project: ' + kind + '\nTimeline: ' + $('#fWhen').value + '\n\nHow it works today:\n' + $('#fDesc').value +
+      '\n\n' + n.value.trim() + ' (' + m.value.trim() + ')';
+    location.href = 'mailto:dashakid@live.com?subject=' + encodeURIComponent('Project: ' + kind) + '&body=' + encodeURIComponent(body);
+    $('#dName').textContent = n.value.trim().split(' ')[0];
+    $('#formSteps').hidden = true; $('#done').hidden = false; $('#done').focus();
   });
 
-  /* shared: animate metric bars in whatever container */
-  function animateBars(root) {
-    var fills = root.querySelectorAll(".mfill[data-w]");
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () {
-        Array.prototype.forEach.call(fills, function (f) {
-          f.style.width = f.getAttribute("data-w") + "%";
-        });
-      });
-    });
-  }
-  function initBars(root) { animateBars(root); }
-
-  /* trading drawer: simulated execution log */
-  function initTrading(root) {
-    animateBars(root);
-    var log = root.querySelector('[data-role="tradelog"]');
-    var syms = ["NVDA", "AAPL", "MSFT", "AVGO"];
-    var h = 13, m = 41, s = 2;
-
-    function stamp() {
-      s += 1 + Math.floor(Math.random() * 4);
-      if (s > 59) { s -= 60; m++; }
-      if (m > 59) { m -= 60; h = (h + 1) % 24; }
-      function z(n) { return (n < 10 ? "0" : "") + n; }
-      return z(h) + ":" + z(m) + ":" + z(s);
-    }
-    function line() {
-      var r = Math.random();
-      var el = document.createElement("div");
-      if (r < 0.14) {
-        el.innerHTML = '<span class="t">[' + stamp() + ']</span> <span class="sys">GUARD</span> crash-filter pass · regime risk-on';
-      } else if (r < 0.24) {
-        el.innerHTML = '<span class="t">[' + stamp() + ']</span> <span class="sys">RISK</span> sector cap OK · tech ' + (24 + Math.floor(Math.random() * 10)) + '%/35%';
-      } else {
-        var sym = syms[Math.floor(Math.random() * syms.length)];
-        var side = Math.random() < 0.55 ? "buy" : "sell";
-        var qty = 2 + Math.floor(Math.random() * 38);
-        var px = sym === "NVDA" ? (128 + Math.random() * 6).toFixed(2)
-               : sym === "AAPL" ? (231 + Math.random() * 4).toFixed(2)
-               : sym === "MSFT" ? (447 + Math.random() * 6).toFixed(2)
-               : (172 + Math.random() * 5).toFixed(2);
-        el.innerHTML = '<span class="t">[' + stamp() + ']</span> <span class="' + side + '">' +
-          side.toUpperCase() + '</span> ' + sym + " " + qty + " @ " + px + " · paper fill " +
-          (4 + Math.floor(Math.random() * 22)) + "ms";
-      }
-      log.appendChild(el);
-      while (log.children.length > 40) log.removeChild(log.firstChild);
-      log.scrollTop = log.scrollHeight;
-    }
-    for (var i = 0; i < 6; i++) line();
-    var iv = reduceMotion ? null : setInterval(line, 1100);
-    return function () { if (iv) clearInterval(iv); };
-  }
-
-  /* cokeeper drawer: classification feed */
-  var TXNS = [
-    { m: "SQ *CAFE 787 SAN JUAN PR 4417", raw: "cleaned → Café 787", gl: "6420 · Meals", tier: "g", conf: 97 },
-    { m: "AMZN MKTP US*2K4LM09Q3", raw: "cleaned → Amazon Marketplace", gl: "6100 · Office Supplies", tier: "g", conf: 94 },
-    { m: "GUSTO PAYROLL 0086 DES:NET", raw: "cleaned → Gusto Payroll", gl: "6000 · Payroll", tier: "g", conf: 99 },
-    { m: "TST* HARBOR GRP LLC 002", raw: "cleaned → Harbor Group", gl: "6420 · Meals?", tier: "y", conf: 68 },
-    { m: "ACH WD 8842-CRDX HOLD", raw: "vendor cascade: no match", gl: "Manual review", tier: "r", conf: 41 },
-    { m: "GOOGLE *GSUITE_dashakid", raw: "cleaned → Google Workspace", gl: "6510 · Software", tier: "g", conf: 98 }
-  ];
-
-  function initCokeeper(root) {
-    animateBars(root);
-    var body = root.querySelector('[data-role="ckbody"]');
-    var timers = [];
-
-    function clearTimers() { timers.forEach(clearTimeout); timers = []; }
-
-    function runFeed() {
-      clearTimers();
-      body.innerHTML = "";
-      TXNS.forEach(function (t, i) {
-        var row = document.createElement("div");
-        row.className = "txn t-" + t.tier;
-        row.innerHTML =
-          '<div class="m">' + t.m + "<small>" + t.raw + "</small></div>" +
-          '<div class="cls">' +
-            '<span class="verdict">classifying…</span>' +
-            '<div class="conf-track"><div class="conf-fill"></div></div>' +
-            '<span class="pct">— %</span>' +
-          "</div>";
-        body.appendChild(row);
-        timers.push(setTimeout(function () { row.classList.add("shown"); }, 120 + i * 260));
-        timers.push(setTimeout(function () {
-          row.classList.add("done");
-          row.querySelector(".verdict").textContent = t.gl;
-          row.querySelector(".conf-fill").style.width = t.conf + "%";
-          row.querySelector(".pct").textContent = t.conf + "% · " +
-            (t.tier === "g" ? "AUTO-IMPORT" : t.tier === "y" ? "SPOT-CHECK" : "REVIEW");
-        }, 700 + i * 420));
-      });
-    }
-
-    root.querySelector('[data-role="ckreplay"]').addEventListener("click", runFeed);
-    runFeed();
-    return clearTimers;
-  }
-
-  /* ============================================================
-     6 · HERO VIDEO — deferred until page load, poster fallback
-     ============================================================ */
-  (function heroVideo() {
-    var video = document.getElementById("heroVideo");
-    if (!video || reduceMotion) return;
-    var conn = navigator.connection;
-    if (conn && (conn.saveData || /2g/.test(conn.effectiveType || ""))) return; // poster only
-
-    function attach() {
-      var sources = [
-        { src: "beach-clip.webm", type: "video/webm" },
-        { src: "beach-clip.mp4", type: "video/mp4" }
-      ];
-      var failed = 0;
-      sources.forEach(function (s) {
-        var el = document.createElement("source");
-        el.src = s.src;
-        el.type = s.type;
-        el.addEventListener("error", function () {
-          failed++;
-          if (failed === sources.length) video.remove(); // scrim + ambient bg remain
-        });
-        video.appendChild(el);
-      });
-      video.addEventListener("canplay", function () {
-        video.classList.add("ready");
-        var p = video.play();
-        if (p && p.catch) p.catch(function () {}); // autoplay blocked → poster stays
-      }, { once: true });
-      video.load();
-    }
-
-    if (document.readyState === "complete") attach();
-    else window.addEventListener("load", attach, { once: true });
-  })();
+  onScroll();
 })();
 </script>
 </body>

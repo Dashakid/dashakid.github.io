@@ -1,0 +1,19 @@
+# The "Latest" feed on the home page. Newest first. One entry per line of news.
+# Add a line at the top:  - date: 2026-10-15
+#                           text: Shipped X.
+#                           link: /projects/x   (optional)
+
+- date: 2026-10-01
+  text: Turned this site into a build log, with a page per project, dated updates and an RSS feed.
+  link: /feed.xml
+- date: 2026-08-24
+  text: Rebuilt the portfolio. Added Missed-Call Rescue, the cold email agent and two projects in build.
+- date: 2026-07-15
+  text: Published the ReviewSignal and Pintona write-ups.
+  link: /projects/reviewsignal
+- date: 2026-05-13
+  text: Published the Kakashi write-up on the Polymarket bot.
+  link: /projects/polymarket
+- date: 2026-04-03
+  text: Published the CoKeeper and trading bot write-ups.
+  link: /projects/cokeeper
