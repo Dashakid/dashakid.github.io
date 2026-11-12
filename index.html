@@ -1,704 +1,1113 @@
----
-layout: null
----
 <!DOCTYPE html>
 <html lang="en">
 <head>
-{% include head.html %}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gian-Carlo Javier — AI Automation Engineer</title>
+<meta name="description" content="Gian-Carlo Javier builds ML pipelines, trading systems and AI automations end to end, from the model and risk checks to the server. English and Spanish.">
+<meta name="theme-color" content="#05070d">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Gian-Carlo Javier — AI Automation Engineer">
+<meta property="og:description" content="ML pipelines, trading systems and AI automations, built end to end. English and Spanish.">
+<meta property="og:url" content="https://dashakid.github.io/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%2305070d'/%3E%3Ctext x='32' y='43' font-family='Arial,sans-serif' font-weight='900' font-size='28' text-anchor='middle' fill='%233fe0d0'%3EGJ%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Archivo+Black&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
-{% include site.css %}
+:root{
+  --accent:#3fe0d0;
+  --accent-rgb:63,224,208;
+  --ink:#eef2fb;
+  --body:#c5cee3;
+  --dim:#8f9bb8;
+  --panel:rgba(6,10,20,.84);
+  --line:rgba(255,255,255,.08);
+  --display:"Archivo Black","Archivo",system-ui,sans-serif;
+  --sans:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:#05070d;color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--accent);color:#000}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+
+/* WebGL backdrop */
+#scene{position:fixed;inset:0;width:100vw;height:100vh;z-index:0;display:block;background:radial-gradient(ellipse at 50% 30%,#13254d 0%,#05070d 70%)}
+.vignette{position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.5) 100%)}
+
+/* Loader */
+#loader{position:fixed;inset:0;z-index:100;background:#05070d;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity .6s ease,visibility 0s .6s}
+#loader.done{opacity:0;visibility:hidden}
+#loader .word{font-family:var(--display);font-size:15px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
+#loader .bar{width:160px;height:2px;background:rgba(255,255,255,.14)}
+#loader .fill{height:100%;width:0;background:var(--accent);transition:width .15s linear}
+#loader .pct{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:.16em}
+
+/* Labels */
+.label{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+
+/* Nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;justify-content:space-between;align-items:center;padding:16px 32px;background:rgba(5,7,13,.62);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+nav .brand{font-family:var(--display);letter-spacing:.05em;font-size:14px;white-space:nowrap}
+nav .links a{white-space:nowrap}
+nav .links{display:flex;gap:28px;align-items:center}
+nav .links a{color:var(--ink);opacity:.82;transition:opacity .2s,color .2s}
+nav .links a:hover{opacity:1;color:var(--accent)}
+nav .cta{border:1px solid rgba(var(--accent-rgb),.7);padding:8px 16px;border-radius:999px;opacity:1!important}
+nav .cta:hover{background:var(--accent);color:#04060c!important}
+
+/* HUD */
+.hud{position:fixed;z-index:5;font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:#eef3ff;text-shadow:0 1px 6px rgba(0,0,0,.9);text-transform:uppercase;pointer-events:none;transition:opacity .4s}
+.hud.bl{left:32px;bottom:24px}
+.hud.br{right:32px;bottom:24px;text-align:right}
+.hud .prog{display:inline-block;width:120px;height:2px;background:rgba(255,255,255,.18);vertical-align:middle;margin-left:10px;position:relative}
+.hud .prog i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--accent)}
+body.end .hud{opacity:0}
+
+/* Section rail */
+#rail{position:fixed;right:30px;top:50%;transform:translateY(-50%);z-index:20;display:flex;flex-direction:column;align-items:flex-end;gap:11px;font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+#rail a{color:#eef3ff;opacity:.55;text-shadow:0 1px 6px rgba(0,0,0,.9);transition:opacity .3s,color .3s,padding .3s;border-right:2px solid transparent}
+#rail a span{display:none}
+#rail a.on{opacity:1;color:var(--accent);border-right-color:var(--accent);padding-right:10px}
+#rail a.on span,#rail a:hover span{display:inline}
+
+/* Layout */
+main{position:relative;z-index:10}
+section{min-height:100vh;padding:120px 32px;display:flex;align-items:center;scroll-margin-top:0}
+.wrap{width:100%;max-width:1120px;margin:0 auto}
+.panel{background:var(--panel);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:20px;padding:44px;box-shadow:0 30px 80px -20px rgba(0,0,0,.55)}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(30px,4.2vw,54px);line-height:1;text-transform:uppercase;letter-spacing:-.005em;margin-top:12px}
+.lede{color:var(--body);font-size:17px;max-width:60ch;margin-top:18px}
+
+/* Hero */
+.hero{position:relative}
+.hero::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(5,7,13,.82) 0%,rgba(5,7,13,.6) 42%,rgba(5,7,13,0) 78%);pointer-events:none}
+.hero .wrap{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:26px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(26px,5.6vw,84px);line-height:.98;letter-spacing:-.01em;text-transform:uppercase;text-shadow:0 4px 30px rgba(0,0,0,.5)}
+h1 .line{display:block}
+.w{display:inline-block;white-space:nowrap}
+.ch{display:inline-block;transform:translateY(60%);opacity:0;transition:transform .8s cubic-bezier(.2,.8,.2,1) calc(var(--i)*18ms),opacity .4s calc(var(--i)*18ms)}
+h1.in .ch{transform:none;opacity:1}
+.sub{max-width:560px;color:var(--ink);font-size:18px;line-height:1.55;text-shadow:0 1px 10px rgba(0,0,0,.8)}
+.sub b{font-weight:600}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:6px}
+.btn{display:inline-flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;padding:14px 24px;border-radius:999px;border:1px solid transparent;cursor:pointer;transition:background .2s,color .2s,border-color .2s}
+.btn.primary{background:var(--accent);color:#04060c}
+.btn.primary:hover{background:#fff}
+.btn.ghost{border-color:rgba(255,255,255,.55);color:var(--ink);background:rgba(5,7,13,.45)}
+.btn.ghost:hover{border-color:#fff;background:rgba(255,255,255,.12)}
+
+/* Services + numbers */
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.services{list-style:none;margin-top:26px}
+.services li{display:flex;gap:16px;align-items:baseline;padding:13px 0;border-top:1px solid var(--line);font-size:17px;color:var(--ink)}
+.services li span{font-family:var(--mono);font-size:12px;color:var(--accent);min-width:22px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:28px 24px;align-content:center}
+.stat b{display:block;font-family:var(--display);font-weight:400;font-size:clamp(34px,4vw,52px);line-height:1;color:var(--ink);white-space:nowrap}
+.stat b i{font-style:normal;color:var(--accent)}
+.stat span{display:block;margin-top:10px;font-size:14px;color:var(--body);line-height:1.4}
+
+/* Work */
+.work-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:30px}
+.work-head p{color:var(--body);font-size:15px;max-width:340px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.card{position:relative;display:block;background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:14px;padding:28px;overflow:hidden;transition:border-color .35s ease,background .35s ease,transform .35s ease}
+.card:hover{border-color:rgba(var(--accent-rgb),.55);background:rgba(255,255,255,.06);transform:translateY(-2px)}
+.card .top{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--dim);margin-bottom:18px}
+.chip{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;border:1px solid currentColor;padding:4px 10px;border-radius:999px;white-space:nowrap}
+.chip.live{color:#5dffb0}
+.chip.build{color:#ffd166}
+.chip.neutral{color:#c9d3ec}
+.card h3{font-family:var(--display);font-weight:400;font-size:24px;text-transform:uppercase;line-height:1.05;margin-bottom:12px}
+.card p{font-size:15px;color:var(--body);line-height:1.6}
+.metric{margin-top:18px;font-family:var(--mono);font-size:12px;color:var(--ink);border-left:2px solid var(--accent);border-radius:1px;padding-left:12px;line-height:1.7}
+.metric b{color:var(--accent)}
+.card .read{margin-top:18px;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+.more-head{margin:38px 0 6px}
+.more{list-style:none}
+.more li{border-top:1px solid var(--line)}
+.more li:last-child{border-bottom:1px solid var(--line)}
+.more a{display:grid;grid-template-columns:210px 1fr auto;gap:20px;align-items:center;padding:15px 12px;border-radius:10px;transition:background .25s}
+.more a:hover{background:rgba(255,255,255,.05)}
+.more strong{font-weight:600;font-size:16px;color:var(--ink)}
+.more a>span:nth-child(2){font-size:14.5px;color:var(--body)}
+
+/* About */
+.about .panel{max-width:600px;margin-left:auto}
+.about p{color:var(--body);font-size:17px;margin-top:16px}
+.about p:first-of-type{margin-top:20px}
+.textlinks{display:flex;gap:22px;flex-wrap:wrap;margin-top:26px;font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+.textlinks a{color:var(--ink);border-bottom:1px solid rgba(var(--accent-rgb),.6);padding-bottom:3px}
+.textlinks a:hover{color:var(--accent)}
+
+/* Process */
+.steps{list-style:none;display:grid;grid-template-columns:repeat(3,1fr);gap:0 28px;margin-top:30px}
+.steps li{border-top:1px solid var(--line);padding:20px 0 26px;font-size:18px;font-weight:500;color:var(--ink);line-height:1.35}
+.steps li span{display:block;font-family:var(--mono);font-size:12px;font-weight:400;color:var(--accent);letter-spacing:.14em;margin-bottom:10px}
+
+/* Stack marquee */
+.marquee-sec{min-height:50vh;flex-direction:column;justify-content:center;gap:14px;padding-left:0;padding-right:0}
+.marquee{width:100%;overflow:hidden;white-space:nowrap;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(5,7,13,.78);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:14px 0}
+.marquee .track{display:inline-block;animation:mq 44s linear infinite;font-family:var(--display);font-size:clamp(20px,3vw,38px);text-transform:uppercase}
+.marquee.rev .track{animation-direction:reverse;animation-duration:52s;-webkit-text-stroke:1px var(--ink);color:transparent}
+.marquee .track span{margin:0 26px}
+.marquee .track i{font-style:normal;color:var(--accent)}
+@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* Contact */
+.contact{padding-top:104px;padding-bottom:56px}
+.contact .panel{max-width:540px;margin:0;padding:36px 40px}
+.contact h2{font-size:clamp(26px,2.9vw,38px)}
+.contact form{margin-top:22px;gap:14px}
+.contact .field textarea{min-height:104px}
+form{display:grid;gap:16px;margin-top:28px}
+.field{display:grid;gap:7px}
+.field label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.field input,.field select,.field textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:12px 14px;transition:border-color .2s,background .2s}
+.field select option{color:#05070d}
+.field textarea{min-height:120px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--accent)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.form-foot{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.form-foot small{font-size:13px;color:var(--dim)}
+.contact .textlinks{padding-top:24px;border-top:1px solid var(--line)}
+
+footer{position:relative;z-index:10;display:flex;justify-content:space-between;padding:22px 32px;font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--dim);background:rgba(5,7,13,.86);text-transform:uppercase;flex-wrap:wrap;gap:10px}
+
+/* Reveal */
+.rv{opacity:0;transform:translateY(14px);transition:opacity 1s ease,transform 1s cubic-bezier(.16,1,.3,1)}
+.rv.in{opacity:1;transform:none}
+
+@media (max-width:1240px){#rail{display:none}}
+/* narrow or portrait: the car sits centre-frame, so leave it a clear window under the form */
+@media (max-width:900px),(max-aspect-ratio:1/1){.contact{align-items:flex-start;padding-bottom:46vh}.contact .panel{max-width:none}}
+@media (max-width:900px){
+  .duo,.grid{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr 1fr}
+  .more a{grid-template-columns:1fr auto;gap:6px 14px}
+  .more a>span:nth-child(2){grid-column:1/-1;grid-row:2}
+  .about .panel{margin-left:0}
+}
+@media (max-width:760px){
+  nav{padding:14px 18px}
+  nav .links{gap:16px}
+  nav .links a.opt{display:none}
+  nav .brand{font-size:13px}
+  nav .cta{padding:7px 10px;letter-spacing:.08em;font-size:11px}
+  section{padding:96px 16px}
+  .panel{padding:28px 22px;border-radius:16px}
+  .hud{display:none}
+  .hero::before{background:linear-gradient(rgba(5,7,13,.7),rgba(5,7,13,.5))}
+  .steps,.two{grid-template-columns:1fr}
+  .stats{gap:22px 16px}
+  .btn{width:100%}
+  .form-foot .btn{width:auto}
+}
+@media (max-width:480px){nav .links a:not(.cta){display:none}}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .marquee .track{animation:none}
+  .rv,.ch{transition:none;transform:none}
+}
 </style>
 </head>
 <body>
 
-<div class="opener" aria-hidden="true">
-  <div class="opener-inner"><div class="opener-mark">GJ</div><div class="opener-line"></div></div>
+<div id="loader">
+  <div class="word">Gian-Carlo Javier</div>
+  <div class="bar"><div class="fill" id="lfill"></div></div>
+  <div class="pct" id="lpct">000%</div>
 </div>
-<div class="progress" aria-hidden="true"></div>
-<div class="spotlight" aria-hidden="true"></div>
-<div class="grain" aria-hidden="true"></div>
-<div class="room" aria-hidden="true"><i class="room-dot"></i><span id="roomName">Intro</span></div>
 
-{% include nav.html %}
+<canvas id="scene"></canvas>
+<div class="vignette"></div>
+<div id="rail"></div>
+
+<nav>
+  <a class="brand" href="#top">Gian-Carlo Javier</a>
+  <div class="links">
+    <a href="#work">Work</a>
+    <a class="opt" href="#about">About</a>
+    <a class="opt" href="#process">Process</a>
+    <a class="cta" href="#contact">Start a project</a>
+  </div>
+</nav>
+
+<div class="hud bl">Viejo San Juan · 18.46°N 66.11°W · <span id="clock">--:--</span> AST</div>
+<div class="hud br">Playa <span id="depth">1200 M</span><span class="prog"><i id="progbar"></i></span></div>
 
 <main id="top">
 
-  <!-- HERO -->
-  <section class="hero" data-room="Intro" id="intro">
-    <div class="wrap hero-grid">
-      <div class="hero-copy reveal">
-        <span class="label">AI automation &middot; Puerto Rico</span>
-        <h1>Systems that think, pipelines that <em>ship</em>.</h1>
-        <p>I'm Gian-Carlo Javier. I build ML pipelines, trading systems and AI automations for work that's repetitive but messy: bank transactions, missed calls, market data, customer reviews. Each one scores its own confidence and says when it shouldn't be trusted. This site is where I write up how they work.</p>
-        <div class="hero-btns">
-          <a href="#logs" class="btn btn-primary">Read the build logs</a>
-          <a href="#contact" class="btn btn-ghost">Start a project</a>
-        </div>
-        <div class="micro">
-          <img src="/assets/me.jpg" alt="" width="34" height="34">
-          <span>Seven systems live in production. Python, FastAPI, CatBoost, Twilio, Redis, Postgres, AWS, GCP.</span>
-        </div>
-      </div>
-      <div class="reveal">
-        <div class="frame" id="frame">
-          <canvas id="gate" tabindex="0" role="img" aria-label="Live simulation of a risk gate: trade signals flow left to right through four checks: confidence, edge, exposure and duplicate. Signals that fail a check are blocked. Click or press Enter to change the confidence threshold."></canvas>
-          <span class="hud hud-tl">Risk gate &middot; sim</span>
-          <span class="hud hud-tr" id="modeTag">Default &middot; 60%</span>
-          <div class="readout">
-            <div><span>Signals</span><b class="num" id="rSeen">0</b></div>
-            <div><span>Passed</span><b class="num" id="rPass">0</b></div>
-            <div><span>Blocked</span><b class="num" id="rBlock">0</b></div>
-            <div><span>Pass rate</span><b class="num" id="rRate">0%</b></div>
-          </div>
-        </div>
-        <p class="frame-note">Simplified version of the risk gate in Kakashi, my Polymarket bot. Click it to change how strict the confidence check is.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- LATEST + NOW: edit _data/updates.yml and _data/now.yml -->
-  <section data-room="Latest" id="latest" style="padding-top: clamp(56px, 7vw, 88px)">
+  <section class="hero" id="hero">
     <div class="wrap">
-      <div class="pulse-grid reveal">
-        <div class="latest">
-          <div class="latest-head"><span class="label">Latest</span><a href="{{ '/feed.xml' | relative_url }}">RSS feed</a></div>
-          <ul class="updates">
-            {%- for u in site.data.updates limit: 5 %}
-            <li><time class="num" datetime="{{ u.date | date: '%Y-%m-%d' }}">{{ u.date | date: "%b %-d '%y" }}</time><span>{% if u.link %}<a href="{{ u.link | relative_url }}">{{ u.text }}</a>{% else %}{{ u.text }}{% endif %}</span></li>
-            {%- endfor %}
-          </ul>
-        </div>
-        <div class="now">
-          <span class="label">Now</span>
-          <p>{{ site.data.now.text }}</p>
-          <small>Updated {{ site.data.now.updated | date: "%b %-d, %Y" }}</small>
-        </div>
+      <div class="label rv">AI automation engineer · Data scientist</div>
+      <h1 class="rv">
+        <span class="line">Systems that think.</span>
+        <span class="line">Pipelines that ship.</span>
+      </h1>
+      <p class="sub rv">I build <b>ML pipelines, trading systems and AI automations</b> end to end, from the model and risk checks to the server. I work in English and Spanish.</p>
+      <div class="actions rv">
+        <a class="btn primary" href="#contact">Start a project</a>
+        <a class="btn ghost" href="#work">See the work</a>
       </div>
     </div>
   </section>
 
-  <!-- STATS -->
-  <section data-room="Numbers" id="numbers" style="padding-top: clamp(40px, 5vw, 64px)">
-    <div class="wrap">
-      <div class="stats reveal">
-        <div class="stat"><div class="stat-n num" data-count="7">7</div><p>Systems live in production</p></div>
-        <div class="stat"><div class="stat-n num" data-count="9">9</div><p>Client websites designed, built and shipped</p></div>
-        <div class="stat"><div class="stat-n num" data-count="92.5" data-dec="1">92.5<small>%</small></div><p>CoKeeper accuracy in production</p></div>
-        <div class="stat"><div class="stat-n num" data-count="16">16<small>&times;</small></div><p>Less categorization time: 8 hours of entry down to 30 minutes of review</p></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- BLOG -->
-  <section data-room="Build logs" id="logs">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <div><span class="label">Build logs</span><h2>How the systems work</h2></div>
-        <p>Notes on every build: how the data flows, the checks that keep it safe, and what broke. Open any entry for the architecture, or read the full write-up where there is one.</p>
-      </div>
-
-      {%- assign featured = site.posts | where: "featured", true | first %}
-      {%- if featured %}
-      {%- assign fwords = featured.content | number_of_words %}
-      <a class="featured reveal" href="{{ featured.url | relative_url }}">
-        {%- if featured.image %}
-        <div class="featured-img"><img src="{{ featured.image | relative_url }}" alt="{{ featured.image_alt | escape }}" loading="lazy"></div>
-        {%- endif %}
-        <div class="featured-body">
-          <div class="meta"><span>Featured</span><time datetime="{{ featured.date | date_to_xmlschema }}">{{ featured.date | date: "%b %-d, %Y" }}</time><span class="num">{{ fwords | divided_by: 200 | at_least: 1 }} min read</span></div>
-          <h3>{{ featured.title }}</h3>
-          <p>{{ featured.excerpt | strip_html }}</p>
-          <span class="read-more">Read the write-up</span>
-        </div>
-      </a>
-      {%- endif %}
-
-      <div class="blog-tools reveal" style="margin-top: 48px">
-        <div class="chips" role="group" aria-label="Filter build logs by topic">
-          <button class="chip" type="button" data-filter="all" aria-pressed="true">All</button>
-          <button class="chip" type="button" data-filter="trading" aria-pressed="false">Trading</button>
-          <button class="chip" type="button" data-filter="ml" aria-pressed="false">ML &amp; NLP</button>
-          <button class="chip" type="button" data-filter="auto" aria-pressed="false">Automation</button>
-          <button class="chip" type="button" data-filter="web" aria-pressed="false">Web</button>
-        </div>
-        <div class="search">
-          <label for="q">Search</label>
-          <input id="q" type="search" placeholder="Twilio, CatBoost, EC2..." autocomplete="off">
-        </div>
-      </div>
-
-      <!-- One entry per file in _posts/, newest first. -->
-      <ol class="posts" id="posts">
-        {%- for post in site.posts %}
-        {%- assign words = post.content | number_of_words %}
-        <li class="post" data-cat="{{ post.topics | join: ' ' }}" data-text="{{ post.content | strip_html | normalize_whitespace | truncatewords: 160, '' | downcase | escape }}">
-          <a class="post-row" href="{{ post.url | relative_url }}">
-            <span class="post-idx num">{% if forloop.index < 10 %}0{% endif %}{{ forloop.index }}</span>
-            <div><time class="post-date" datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%b %-d, %Y" }}</time><h3>{{ post.title }}</h3><p>{{ post.excerpt | strip_html }}</p></div>
-            <div class="meta">
-              {%- if post.status %}<span{% if post.live %} class="live"{% endif %}>{{ post.status }}</span>{% endif %}
-              <span class="num">{{ words | divided_by: 200 | at_least: 1 }} min read</span>
-              <span>{% for t in post.topics %}{% case t %}{% when "trading" %}Trading{% when "ml" %}ML{% when "auto" %}Automation{% when "web" %}Web{% else %}{{ t }}{% endcase %}{% unless forloop.last %} &middot; {% endunless %}{% endfor %}</span>
-            </div>
-          </a>
-        </li>
-        {%- endfor %}
-      </ol>
-      <p class="empty" id="empty" role="status">Nothing matches that yet. Try another word or clear the filter.</p>
-    </div>
-  </section>
-
-  <!-- ABOUT -->
-  <section data-room="About" id="about">
-    <div class="wrap about reveal">
-      <img src="/assets/me.jpg" alt="Gian-Carlo Javier" width="480" height="430" loading="lazy">
-      <div>
-        <span class="label">About</span>
-        <h2>Hi, I'm Gian-Carlo.</h2>
-        <p>I'm an AI automation engineer and data scientist based in Puerto Rico. I build the systems in these logs end to end, from the model and the risk checks to the server they run on, and most of them started as a manual task someone was tired of doing. I write each one up because the hard part is rarely the model: it's deciding what the system should do when it isn't sure.</p>
-        <div class="about-links">
-          <a href="https://github.com/{{ site.author.github }}">GitHub</a>
-          <a href="https://www.linkedin.com/in/{{ site.author.linkedin }}">LinkedIn</a>
-          {%- if site.author.content_handle and site.author.content_handle != "" %}
-          <a href="{{ site.author.content_url }}">{{ site.author.content_handle }}</a>
-          {%- endif %}
-          <a href="mailto:{{ site.author.email }}">Email</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- SERVICES -->
-  <section data-room="Services" id="services">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <div><span class="label">What I build</span><h2>Six kinds of work</h2></div>
-        <p>Most projects are one of these, or two stuck together. If yours isn't on the list, ask anyway.</p>
-      </div>
-      <div class="cells reveal">
-        <div class="cell"><span class="cell-idx">A</span><h3>Lead &amp; call automation</h3><p>Missed calls texted back, follow-ups sent, review requests out the door. The admin a solo operator never has time for.</p><div class="tags"><span class="tag">Twilio</span><span class="tag">Webhooks</span><span class="tag">FastAPI</span></div></div>
-        <div class="cell"><span class="cell-idx">B</span><h3>Classification models</h3><p>Sorting transactions, tickets or documents into categories, with a confidence score on every prediction so you know what to check.</p><div class="tags"><span class="tag">CatBoost</span><span class="tag">scikit-learn</span><span class="tag">GCP</span></div></div>
-        <div class="cell"><span class="cell-idx">C</span><h3>Trading systems</h3><p>Strategies, screeners and execution bots with hard risk limits written in code and a paper-trading period before any real money.</p><div class="tags"><span class="tag">Alpaca</span><span class="tag">Redis</span><span class="tag">Postgres</span></div></div>
-        <div class="cell"><span class="cell-idx">D</span><h3>LLM agents</h3><p>Claude, OpenAI or Gemini wired into a real process: drafting messages, routing tasks, summarizing. Each call has a fallback for when the API goes down.</p><div class="tags"><span class="tag">Claude API</span><span class="tag">OpenAI API</span><span class="tag">Gemini</span></div></div>
-        <div class="cell"><span class="cell-idx">E</span><h3>Review reports</h3><p>A fixed-price ReviewSignal report in 5 to 7 days: what customers complain about, what they love, and what to fix first. English or Spanish.</p><div class="tags"><span class="tag">NLP</span><span class="tag">BERT</span><span class="tag">EN/ES</span></div></div>
-        <div class="cell"><span class="cell-idx">F</span><h3>Websites &amp; web apps</h3><p>Fast sites and installable apps without a heavy front-end stack. Nine client sites shipped so far.</p><div class="tags"><span class="tag">HTML/CSS/JS</span><span class="tag">Firebase</span><span class="tag">PWA</span></div></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CALCULATOR -->
-  <section data-room="Calculator" id="calc">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <div><span class="label">Try it</span><h2>What does manual sorting cost?</h2></div>
-        <p>A rough estimate using CoKeeper's tier split. Move the sliders to match your month.</p>
-      </div>
-      <form class="tool reveal" id="calcForm" onsubmit="return false">
-        <div class="tool-in">
-          <div>
-            <div class="field-top"><label for="cTx">Transactions per month</label><output class="num" for="cTx" id="oTx">600</output></div>
-            <input type="range" id="cTx" min="50" max="5000" step="50" value="600">
-          </div>
-          <div>
-            <div class="field-top"><label for="cMin">Minutes per transaction</label><output class="num" for="cMin" id="oMin">1.5</output></div>
-            <input type="range" id="cMin" min="0.5" max="5" step="0.25" value="1.5">
-          </div>
-          <fieldset>
-            <legend>Cost of an hour of review</legend>
-            <div class="seg">
-              <label><input type="radio" name="rate" value="40"><span>$40</span></label>
-              <label><input type="radio" name="rate" value="75" checked><span>$75</span></label>
-              <label><input type="radio" name="rate" value="120"><span>$120</span></label>
-            </div>
-          </fieldset>
-          <fieldset>
-            <legend>What happens to green-tier items</legend>
-            <div class="seg">
-              <label><input type="radio" name="mode" value="auto" checked><span>Auto-import</span></label>
-              <label><input type="radio" name="mode" value="glance"><span>Quick glance</span></label>
-            </div>
-          </fieldset>
-        </div>
-        <div class="tool-out" aria-live="polite">
-          <div class="results">
-            <div><span>Manual hours / mo</span><b class="num" id="kManual">15.0</b></div>
-            <div><span>With tiers</span><b class="num" id="kAuto">6.2</b></div>
-            <div class="hl"><span>Hours back / mo</span><b class="num" id="kSaved">8.9</b></div>
-            <div class="hl"><span>Saved / yr</span><b class="num" id="kMoney">$7,965</b></div>
-          </div>
-          <svg viewBox="0 0 400 120" role="img" aria-labelledby="dTitle">
-            <title id="dTitle">Bar diagram: share of transactions auto-imported versus sent to review</title>
-            <text x="0" y="12" fill="#707070" font-size="9" letter-spacing="2" font-family="Inter, sans-serif">EVERY TRANSACTION, REVIEWED BY HAND</text>
-            <rect x="0.5" y="22" width="399" height="22" fill="#1E1E1E" stroke="#2E2E2E"/>
-            <text x="0" y="72" fill="#707070" font-size="9" letter-spacing="2" font-family="Inter, sans-serif">AFTER CONFIDENCE TIERS</text>
-            <rect id="barGreen" x="0" y="82" width="236" height="22" fill="#D08A4E"/>
-            <rect id="barRev" x="236" y="82" width="164" height="22" fill="#1E1E1E" stroke="#2E2E2E"/>
-            <text id="lblGreen" x="6" y="97" fill="#0A0A0A" font-size="9" font-weight="600" font-family="Inter, sans-serif">GREEN 59% &#183; AUTO</text>
-            <text x="394" y="97" text-anchor="end" fill="#A3A3A3" font-size="9" font-family="Inter, sans-serif">REVIEW 41%</text>
-          </svg>
-          <p class="fine">Assumes about 59% of items land in the green tier, as in CoKeeper's production data, and that a quick glance takes 15% of the full review time. Your data will be different. That's what a first call is for.</p>
-        </div>
-      </form>
-    </div>
-  </section>
-
-  <!-- TABS -->
-  <section data-room="Measured" id="stack">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <div><span class="label">By the numbers</span><h2>Measured, not claimed</h2></div>
-        <p>A few of the numbers behind the build logs. Use the arrow keys to switch tabs.</p>
-      </div>
-      <div class="reveal" id="tabs">
-        <div class="tablist" role="tablist" aria-label="Project measurements">
-          <button class="tab" role="tab" id="t-ck" aria-controls="p-ck" aria-selected="true">CoKeeper tiers</button>
-          <button class="tab" role="tab" id="t-pt" aria-controls="p-pt" aria-selected="false" tabindex="-1">Pintona Lighthouse</button>
-          <button class="tab" role="tab" id="t-st" aria-controls="p-st" aria-selected="false" tabindex="-1">Project status</button>
-        </div>
-        <div class="panel" role="tabpanel" id="p-ck" aria-labelledby="t-ck" tabindex="0">
-          <p>Accuracy by confidence tier. The point isn't that every tier is accurate. It's that the model knows which tier it's in, so the 56% predictions never get auto-imported.</p>
-          <ul class="meters">
-            <li><div class="meter-top"><span>Green &middot; &ge;80% confidence</span><span class="num">99.2%</span></div><div class="bar"><i data-w="99.2"></i></div></li>
-            <li><div class="meter-top"><span>Yellow &middot; 50&ndash;80%</span><span class="num">94.8%</span></div><div class="bar"><i data-w="94.8"></i></div></li>
-            <li><div class="meter-top"><span>Red &middot; under 50%</span><span class="num">56.3%</span></div><div class="bar"><i data-w="56.3"></i></div></li>
-            <li><div class="meter-top"><span>Share of transactions landing green</span><span class="num">59%</span></div><div class="bar"><i data-w="59"></i></div></li>
-          </ul>
-        </div>
-        <div class="panel" role="tabpanel" id="p-pt" aria-labelledby="t-pt" tabindex="0" hidden>
-          <p>What you get from skipping the framework: a vanilla-JS PWA with no bundle to download before the app can start.</p>
-          <ul class="meters">
-            <li><div class="meter-top"><span>Performance</span><span class="num">97</span></div><div class="bar"><i data-w="97"></i></div></li>
-            <li><div class="meter-top"><span>Accessibility</span><span class="num">100</span></div><div class="bar"><i data-w="100"></i></div></li>
-            <li><div class="meter-top"><span>Best practices</span><span class="num">96</span></div><div class="bar"><i data-w="96"></i></div></li>
-          </ul>
-        </div>
-        <div class="panel" role="tabpanel" id="p-st" aria-labelledby="t-st" tabindex="0" hidden>
-          <p>Where the ten builds in the log stand right now, counted honestly. Paper-validated means it works but isn't trading real money.</p>
-          <ul class="meters">
-            <li><div class="meter-top"><span>Live in production</span><span class="num">7 of 10</span></div><div class="bar"><i data-w="70"></i></div></li>
-            <li><div class="meter-top"><span>In build</span><span class="num">2 of 10</span></div><div class="bar"><i data-w="20"></i></div></li>
-            <li><div class="meter-top"><span>Paper-validated, waiting on the exchange</span><span class="num">1 of 10</span></div><div class="bar"><i data-w="10"></i></div></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- PROCESS -->
-  <section data-room="Process" id="process">
-    <div class="wrap process">
-      <div class="process-head reveal">
-        <span class="label">Process</span>
-        <h2>From a manual task to a system you trust</h2>
-        <p>Same order every time. The safety work happens early, not after something has already gone wrong.</p>
-      </div>
-      <div class="steps-wrap" id="steps">
-        <span class="steps-fill" id="stepsFill" aria-hidden="true"></span>
-        <ol class="steps">
-          <li class="step"><span class="step-n num">Step 01</span><h3>Watch the manual version</h3><p>I sit with whoever does the task now and write down every decision they make, including the ones they make without thinking about it.</p></li>
-          <li class="step"><span class="step-n num">Step 02</span><h3>List what can go wrong</h3><p>Before writing features, I write down the failures: bad data, a dead API, a wrong prediction that looks confident. Each one gets a check.</p></li>
-          <li class="step"><span class="step-n num">Step 03</span><h3>Ship the smallest working loop</h3><p>One path from input to output, running on real data on a schedule. It's ugly, but it runs every day.</p></li>
-          <li class="step"><span class="step-n num">Step 04</span><h3>Add confidence and fallbacks</h3><p>Every output gets a score. Low-confidence results go to a person. Failed calls fall back to something safe and log it.</p></li>
-          <li class="step"><span class="step-n num">Step 05</span><h3>Run it on paper first</h3><p>Paper trades, a review queue or a shadow run next to the manual process, until it meets criteria we agreed on up front.</p></li>
-          <li class="step"><span class="step-n num">Step 06</span><h3>Hand over with eyes on it</h3><p>Alerts on every action and failure, logs you can read, and a write-up like the ones on this page.</p></li>
-        </ol>
-      </div>
-    </div>
-  </section>
-
-  <!-- PROJECTS CAROUSEL -->
-  <section data-room="Work" id="work">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <div><span class="label">Selected work</span><h2>At a glance</h2></div>
-        <div class="car-ctrl">
-          <button class="icon-btn" type="button" id="prev" aria-label="Previous project"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M9 2 4 7l5 5" fill="none" stroke="currentColor"/></svg></button>
-          <button class="icon-btn" type="button" id="next" aria-label="Next project"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="m5 2 5 5-5 5" fill="none" stroke="currentColor"/></svg></button>
-        </div>
-      </div>
-      <div class="track reveal" id="track" tabindex="0" role="region" aria-label="Projects, scroll horizontally">
-        {%- for post in site.posts %}
-        <article class="card">
-          <div class="card-vis">{% if post.image %}<img src="{{ post.image | relative_url }}" alt="" loading="lazy">{% else %}{% include card-art.html slug=post.slug %}{% endif %}</div>
-          <div class="card-body"><span class="tag">{{ post.status | default: "Project" }}</span><h3><a href="{{ post.url | relative_url }}">{{ post.short | default: post.title }}</a></h3><p>{{ post.excerpt | strip_html | truncatewords: 22 }}</p>
-          {%- if post.specs %}
-          <div class="specs">{% for s in post.specs limit: 3 %}<div><span>{{ s[0] }}</span><b class="num">{{ s[1] }}</b></div>{% endfor %}</div>
-          {%- endif %}</div>
-        </article>
-        {%- endfor %}
-      </div>
-    </div>
-  </section>
-
-  <!-- TESTIMONIALS (placeholders) -->
-  <section data-room="Feedback" id="feedback">
-    <div class="wrap">
-      <div class="sec-head reveal">
-        <div><span class="label">Feedback</span><h2>What people say</h2></div>
-        <p><span class="ph">Placeholder section.</span> Swap these cards for real quotes from clients or collaborators before going live. Delete the section if you don't have any yet.</p>
-      </div>
-    </div>
-    <div class="marquee reveal">
-      <div class="marquee-track">
-        <blockquote class="quote"><p><span class="ph">[Real quote goes here.]</span> One or two sentences on what changed for them after the system shipped.</p><footer>[Name] &middot; [Role, Company]</footer></blockquote>
-        <blockquote class="quote"><p><span class="ph">[Real quote goes here.]</span> Ideally a specific result: hours saved, errors caught, a process that now runs itself.</p><footer>[Name] &middot; [Role, Company]</footer></blockquote>
-        <blockquote class="quote"><p><span class="ph">[Real quote goes here.]</span> A collaborator or teammate on what working with you was like.</p><footer>[Name] &middot; [Role, Company]</footer></blockquote>
-        <blockquote class="quote"><p><span class="ph">[Real quote goes here.]</span> Keep it in their words. Short is fine.</p><footer>[Name] &middot; [Role, Company]</footer></blockquote>
-        <blockquote class="quote" aria-hidden="true"><p><span class="ph">[Real quote goes here.]</span> One or two sentences on what changed for them after the system shipped.</p><footer>[Name] &middot; [Role, Company]</footer></blockquote>
-        <blockquote class="quote" aria-hidden="true"><p><span class="ph">[Real quote goes here.]</span> Ideally a specific result: hours saved, errors caught, a process that now runs itself.</p><footer>[Name] &middot; [Role, Company]</footer></blockquote>
-        <blockquote class="quote" aria-hidden="true"><p><span class="ph">[Real quote goes here.]</span> A collaborator or teammate on what working with you was like.</p><footer>[Name] &middot; [Role, Company]</footer></blockquote>
-        <blockquote class="quote" aria-hidden="true"><p><span class="ph">[Real quote goes here.]</span> Keep it in their words. Short is fine.</p><footer>[Name] &middot; [Role, Company]</footer></blockquote>
-      </div>
-    </div>
-  </section>
-
-  <!-- FAQ -->
-  <section data-room="FAQ" id="faq">
-    <div class="wrap">
-      <div class="sec-head reveal"><div><span class="label">FAQ</span><h2>Common questions</h2></div></div>
-      <div class="faq reveal">
-        <details><summary>What kind of projects are a good fit?</summary><p>Anything repetitive where the data is a bit messy: categorizing, screening, summarizing, routing. If someone on your team does the same steps every week and hates it, that's usually a good fit.</p></details>
-        <details><summary>Will an AI system make mistakes?</summary><p>Yes, so I build for it. Every prediction carries a confidence score, low-confidence results go to a person, and the system logs what it did and why. You decide where the line for "trust it" sits.</p></details>
-        <details><summary>Do I need to change the tools we already use?</summary><p>Usually not. Most of my work reads from and writes to what you already have: QuickBooks exports, spreadsheets, a Telegram or Discord channel, your database.</p></details>
-        <details><summary>Where do the systems run?</summary><p>In Docker on whatever fits the job: GCP Cloud Run, a small VPS or your own server. You get the code and the deployment setup.</p></details>
-        <details><summary>Do you work remotely?</summary><p>Yes. I'm based in Puerto Rico and work with people anywhere. Calls are on Atlantic Time, which overlaps with US Eastern business hours.</p></details>
-      </div>
-    </div>
-  </section>
-
-  <!-- CONTACT -->
-  <section data-room="Contact" id="contact">
-    <div class="wrap contact">
-      <div class="reveal">
-        <span class="label">Contact</span>
-        <h2>Tell me what you do by hand.</h2>
-        <p style="color: var(--mid); max-width: 420px">Three quick questions. I'll reply within two working days with whether I can help and what I'd build first.</p>
-        <ul class="contact-lines">
-          <li><span>Email</span><a href="mailto:{{ site.author.email }}">{{ site.author.email }}</a></li>
-          <li><span>GitHub</span><a href="https://github.com/{{ site.author.github }}">github.com/{{ site.author.github }}</a></li>
-          <li><span>LinkedIn</span><a href="https://www.linkedin.com/in/{{ site.author.linkedin }}">{{ site.author.name }}</a></li>
-          {%- if site.author.content_handle and site.author.content_handle != "" %}
-          <li><span>Posts</span><a href="{{ site.author.content_url }}">{{ site.author.content_handle }}</a></li>
-          {%- endif %}
-          <li><span>RSS</span><a href="{{ '/feed.xml' | relative_url }}">Build log feed</a></li>
+  <section id="services">
+    <div class="wrap duo">
+      <div class="panel rv">
+        <div class="label">What I build</div>
+        <ul class="services">
+          <li><span>01</span>Lead &amp; call automation</li>
+          <li><span>02</span>Classification models</li>
+          <li><span>03</span>Trading systems</li>
+          <li><span>04</span>LLM agents</li>
+          <li><span>05</span>Review intelligence reports</li>
+          <li><span>06</span>Websites &amp; web apps</li>
         </ul>
-        {% include newsletter.html id="contact" %}
       </div>
-      <div class="form reveal" id="form">
-        <div id="formSteps">
-          <div class="form-prog"><span id="fLabel">Step 1 of 3</span><span id="fName">The work</span></div>
-          <div class="form-bar" aria-hidden="true"><i id="fBar"></i></div>
-          <form id="cform" novalidate>
-            <fieldset class="fstep" data-step="1">
-              <legend class="sr-only">Type of project</legend>
-              <h3>What do you need?</h3>
-              <div class="opts">
-                <label class="opt"><input type="radio" name="kind" value="Workflow automation" checked><span>Automate a workflow</span></label>
-                <label class="opt"><input type="radio" name="kind" value="ML / classification"><span>A model that sorts or predicts</span></label>
-                <label class="opt"><input type="radio" name="kind" value="Trading / market data"><span>Trading or market data</span></label>
-                <label class="opt"><input type="radio" name="kind" value="Website"><span>A website</span></label>
-                <label class="opt"><input type="radio" name="kind" value="Something else"><span>Something else</span></label>
-              </div>
-            </fieldset>
-            <fieldset class="fstep" data-step="2" hidden>
-              <legend class="sr-only">Project details</legend>
-              <h3>Describe the manual version</h3>
-              <div class="fgroup"><label for="fDesc">What happens today, step by step</label><textarea id="fDesc" name="desc" placeholder="Every Monday someone exports bank transactions and assigns each one to a GL account..."></textarea></div>
-              <div class="fgroup"><label for="fWhen">When would you like it running?</label>
-                <select id="fWhen" name="when"><option>No rush</option><option>This quarter</option><option>This month</option></select></div>
-            </fieldset>
-            <fieldset class="fstep" data-step="3" hidden>
-              <legend class="sr-only">Your contact details</legend>
-              <h3>Where do I reply?</h3>
-              <div class="fgroup"><label for="fN">Your name</label><input id="fN" name="name" autocomplete="name" required aria-describedby="eN"><p class="err" id="eN"></p></div>
-              <div class="fgroup"><label for="fE">Email</label><input id="fE" name="email" type="email" autocomplete="email" required aria-describedby="eE"><p class="err" id="eE"></p></div>
-            </fieldset>
-            <div class="form-nav">
-              <button type="button" class="btn btn-ghost" id="fBack" disabled>Back</button>
-              <button type="submit" class="btn btn-primary" id="fNext">Continue</button>
-            </div>
-          </form>
+      <div class="panel stats rv">
+        <div class="stat"><b>92.5<i>%</i></b><span>CoKeeper accuracy in production</span></div>
+        <div class="stat"><b>8h <i>→</i> 30m</b><span>Transaction review time with CoKeeper</span></div>
+        <div class="stat"><b><i>&lt;</i>10s</b><span>From missed call to text back</span></div>
+        <div class="stat"><b>9</b><span>Client websites shipped</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="work" id="work">
+    <div class="wrap panel">
+      <div class="work-head rv">
+        <div>
+          <div class="label">Build logs</div>
+          <h2>Selected systems</h2>
         </div>
-        <div class="done" id="done" hidden tabindex="-1">
-          <span class="label">Almost there</span>
-          <h3 style="margin-top: 14px">Thanks, <span id="dName"></span>.</h3>
-          <p>Your email app should have opened with your answers filled in. Hit send and it reaches me directly. If it didn't open, write to <a href="mailto:dashakid@live.com" style="color: var(--accent)">dashakid@live.com</a>.</p>
+        <p>Each build log covers what the system does, what it checks and what broke.</p>
+      </div>
+      <div class="grid">
+        <a class="card rv" href="https://dashakid.github.io/projects/cokeeper">
+          <div class="top"><span>01</span><span class="chip live">Production · GCP</span></div>
+          <h3>CoKeeper AI</h3>
+          <p>Accountants spend billable hours sorting bank transactions with messy merchant names. CoKeeper runs each one through a five-level vendor cascade and a dual-model classifier, then sorts the results into green, yellow and red confidence tiers, so people only review what the model isn't sure about.</p>
+          <div class="metric">Production accuracy <b>92.5%</b> · Green tier <b>99.2%</b> · Review <b>8h → 30m</b></div>
+          <div class="read">Read the build log →</div>
+        </a>
+        <a class="card rv" href="https://dashakid.github.io/projects/missed-call-rescue">
+          <div class="top"><span>02</span><span class="chip live">Live · Clients</span></div>
+          <h3>Missed-Call Rescue</h3>
+          <p>A Twilio SaaS for solo-operator service businesses. An unanswered call gets a text back within seconds, follow-ups until the job is booked, and a Google review request once it's done.</p>
+          <div class="metric">Text back in <b>under 10s</b></div>
+          <div class="read">Read the build log →</div>
+        </a>
+        <a class="card rv" href="https://dashakid.github.io/projects/reviewsignal">
+          <div class="top"><span>03</span><span class="chip neutral">Fixed scope · Fixed price</span></div>
+          <h3>ReviewSignal</h3>
+          <p>Reviews from Amazon, Shopify, Trustpilot or MercadoLibre become one report: sentiment, the top recurring complaints and praise, and 3 to 5 quantified recommendations.</p>
+          <div class="metric">Delivery <b>5–7 days</b> · Languages <b>EN / ES</b></div>
+          <div class="read">Read the build log →</div>
+        </a>
+        <a class="card rv" href="https://dashakid.github.io/projects/client-websites">
+          <div class="top"><span>04</span><span class="chip live">9 shipped</span></div>
+          <h3>Client websites</h3>
+          <p>Designed, built and deployed end to end. Performance first: plain HTML, CSS and JS by default.</p>
+          <div class="metric">Includes <b>hosting and SEO</b></div>
+          <div class="read">Read the build log →</div>
+        </a>
+      </div>
+
+      <div class="label more-head rv">More builds</div>
+      <ul class="more rv">
+        <li><a href="https://dashakid.github.io/projects/cold-email-agent"><strong>Cold email agent</strong><span>Sources leads, writes a personal opener and sends on a warmed schedule. A reply pauses the sequence and hands off to a human.</span><span class="chip live">Live · EC2</span></a></li>
+        <li><a href="https://dashakid.github.io/projects/pintona"><strong>Pintona</strong><span>Wardrobe PWA on Firebase in English, Spanish and Vietnamese. Lighthouse 97, no build step.</span><span class="chip live">Live</span></a></li>
+        <li><a href="https://dashakid.github.io/projects/trading-bot"><strong>Stock trading bot</strong><span>ML momentum rotation on the Nasdaq-100 with a crash guard and a sector cap.</span><span class="chip neutral">Paper · Alpaca</span></a></li>
+        <li><a href="https://dashakid.github.io/projects/polymarket"><strong>Kakashi</strong><span>Polymarket copy-trader. Validated on paper; live orders are blocked by an exchange-side order version mismatch.</span><span class="chip neutral">Paper-validated</span></a></li>
+        <li><a href="https://dashakid.github.io/projects/white-label-platform"><strong>White-label platform</strong><span>Client management and marketing automation built to be resold under other brands.</span><span class="chip build">In build</span></a></li>
+        <li><a href="https://dashakid.github.io/projects/co-orchestrator"><strong>Co-Orchestrator</strong><span>Routes each subtask to the OpenAI or Anthropic model that does it best, then merges the results into one thread.</span><span class="chip build">In build</span></a></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="about" id="about">
+    <div class="wrap">
+      <div class="panel rv">
+        <div class="label">About</div>
+        <h2>Hi, I'm <span style="white-space:nowrap">Gian-Carlo.</span></h2>
+        <p>AI automation engineer and data scientist. I work with small businesses, agencies and founders who have a process that's still done by hand.</p>
+        <p>Most of what I ship started as a manual task. The hard part is never the code — it's deciding what the system should do when it isn't sure.</p>
+        <div class="textlinks">
+          <a href="https://github.com/Dashakid" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://www.linkedin.com/in/gian-carlo-javier-b0b86b16b" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="mailto:dashakid@live.com">Email</a>
         </div>
       </div>
     </div>
   </section>
+
+  <section id="process">
+    <div class="wrap panel rv">
+      <div class="label">Process</div>
+      <h2>How a build goes</h2>
+      <ol class="steps">
+        <li><span>01</span>Watch the manual version</li>
+        <li><span>02</span>List what can go wrong</li>
+        <li><span>03</span>Ship the smallest working loop</li>
+        <li><span>04</span>Add confidence scores and fallbacks</li>
+        <li><span>05</span>Run on paper first</li>
+        <li><span>06</span>Hand over with alerts, logs and a write-up</li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="marquee-sec" id="stack" aria-label="Stack">
+    <div class="marquee"><div class="track">
+      <span>Python</span><i>/</i><span>FastAPI</span><i>/</i><span>CatBoost</span><i>/</i><span>scikit-learn</span><i>/</i><span>Twilio</span><i>/</i><span>Redis</span><i>/</i><span>Postgres</span><i>/</i>
+      <span aria-hidden="true">Python</span><i>/</i><span aria-hidden="true">FastAPI</span><i>/</i><span aria-hidden="true">CatBoost</span><i>/</i><span aria-hidden="true">scikit-learn</span><i>/</i><span aria-hidden="true">Twilio</span><i>/</i><span aria-hidden="true">Redis</span><i>/</i><span aria-hidden="true">Postgres</span><i>/</i>
+    </div></div>
+    <div class="marquee rev"><div class="track">
+      <span>AWS</span><span>GCP</span><span>Claude</span><span>OpenAI</span><span>Gemini</span><span>Firebase</span><span>BERT</span><span>Alpaca</span>
+      <span aria-hidden="true">AWS</span><span aria-hidden="true">GCP</span><span aria-hidden="true">Claude</span><span aria-hidden="true">OpenAI</span><span aria-hidden="true">Gemini</span><span aria-hidden="true">Firebase</span><span aria-hidden="true">BERT</span><span aria-hidden="true">Alpaca</span>
+    </div></div>
+  </section>
+
+  <section class="contact" id="contact">
+    <div class="wrap">
+      <div class="panel rv">
+        <div class="label">Contact</div>
+        <h2>Tell me what's still manual.</h2>
+        <p class="lede">I'll show you what it looks like automated. Hablo español.</p>
+        <form id="cform">
+          <div class="two">
+            <div class="field">
+              <label for="f-name">Name</label>
+              <input id="f-name" name="name" autocomplete="name" required>
+            </div>
+            <div class="field">
+              <label for="f-type">Project type</label>
+              <select id="f-type" name="type">
+                <option>Automate a workflow</option>
+                <option>A sorting or prediction model</option>
+                <option>Trading or market data</option>
+                <option>A website</option>
+                <option>Something else</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="f-msg">What do you do by hand today?</label>
+            <textarea id="f-msg" name="msg" required></textarea>
+          </div>
+          <div class="form-foot">
+            <button class="btn primary" type="submit">Send message</button>
+            <small>Opens your email app with the message filled in. I reply within two working days.</small>
+          </div>
+        </form>
+        <div class="textlinks">
+          <a href="mailto:dashakid@live.com">dashakid@live.com</a>
+          <a href="https://www.linkedin.com/in/gian-carlo-javier-b0b86b16b" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="https://github.com/Dashakid" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
 </main>
 
-{% include footer.html %}
+<footer>
+  <span>© 2026 Gian-Carlo Javier</span>
+  <span>Hecho en Puerto Rico</span>
+</footer>
 
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
 <script>
-(function () {
-  document.documentElement.classList.add('js');
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var $ = function (s, r) { return (r || document).querySelector(s); };
-  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+(function(){
+  var RM=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
+  /* ---------- loader ---------- */
+  var lfill=document.getElementById('lfill'),lpct=document.getElementById('lpct'),loader=document.getElementById('loader');
+  var loadP=0,ready=false,t0=performance.now(),introT=-1;
+  function tickLoader(){
+    var target=ready?100:Math.min(90,(performance.now()-t0)/14);
+    loadP+=(target-loadP)*0.18;
+    var v=Math.round(loadP);
+    lfill.style.width=v+'%';
+    lpct.textContent=('00'+v).slice(-3)+'%';
+    if(ready&&v>=99){loader.classList.add('done');introT=performance.now();startReveals();return;}
+    requestAnimationFrame(tickLoader);
+  }
+  requestAnimationFrame(tickLoader);
 
-  /* scroll progress + nav + process line */
-  var bar = $('.progress'), nav = $('#nav');
-  function onScroll() {
-    var h = document.documentElement.scrollHeight - innerHeight;
-    bar.style.width = (h > 0 ? scrollY / h * 100 : 0) + '%';
-    nav.classList.toggle('scrolled', scrollY > 40);
-    fillSteps();
-  }
-  addEventListener('scroll', onScroll, { passive: true });
+  /* ---------- clock ---------- */
+  var clock=document.getElementById('clock');
+  function updClock(){try{clock.textContent=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:false,timeZone:'America/Puerto_Rico'});}catch(e){}}
+  updClock();setInterval(updClock,15000);
+  /* ---------- DOM motion ---------- */
+  document.querySelectorAll('h1 .line').forEach(function(l){var n=0;
+    l.innerHTML=l.textContent.split(' ').map(function(w){return '<span class="w">'+w.split('').map(function(c){return '<span class="ch" style="--i:'+(n++)+'">'+c+'</span>';}).join('')+'</span>';}).join(' ');});
+  var rail=document.getElementById('rail'),secs=[].slice.call(document.querySelectorAll('main section')),names=['Intro','Services','Work','About','Process','Stack','Contact'];
+  secs.forEach(function(sc,i){var a=document.createElement('a');a.href='#'+sc.id;a.innerHTML=('0'+(i+1)).slice(-2)+'<span> '+(names[i]||'')+'</span>';
+    rail.appendChild(a);});
+  var sio=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){var i=secs.indexOf(e.target);[].forEach.call(rail.children,function(c,j){c.classList.toggle('on',i===j);});}});},{rootMargin:'-45% 0px -45% 0px'});
+  secs.forEach(function(sc){sio.observe(sc);});
 
-  /* cursor spotlight */
-  var spot = $('.spotlight');
-  addEventListener('pointermove', function (e) {
-    spot.style.setProperty('--mx', e.clientX + 'px');
-    spot.style.setProperty('--my', e.clientY + 'px');
-  }, { passive: true });
 
-  /* reveal: movement only, content is never hidden */
-  var rio = new IntersectionObserver(function (es) {
-    es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); rio.unobserve(e.target); } });
-  }, { rootMargin: '0px 0px -8% 0px' });
-  $$('.reveal').forEach(function (el) { rio.observe(el); });
-
-  /* section indicator + active nav link */
-  var roomName = $('#roomName'), links = $$('.nav-links a');
-  var sio = new IntersectionObserver(function (es) {
-    es.forEach(function (e) {
-      if (!e.isIntersecting) return;
-      roomName.textContent = e.target.dataset.room;
-      var id = e.target.id;
-      links.forEach(function (a) {
-        var on = a.getAttribute('href') === '#' + id;
-        a.classList.toggle('active', on);
-        if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
-      });
-    });
-  }, { rootMargin: '-45% 0px -50% 0px' });
-  $$('[data-room]').forEach(function (s) { sio.observe(s); });
-
-  /* stat counters: the real numbers are already in the HTML */
-  if (!reduce) {
-    var cio = new IntersectionObserver(function (es) {
-      es.forEach(function (e) {
-        if (!e.isIntersecting) return;
-        cio.unobserve(e.target);
-        var el = e.target, target = parseFloat(el.dataset.count), dec = +(el.dataset.dec || 0);
-        var small = el.querySelector('small'), suffix = small ? small.outerHTML : '';
-        var t0 = performance.now();
-        (function tick(t) {
-          var p = Math.min(1, Math.max(0, (t - t0) / 1400)), v = target * (1 - Math.pow(1 - p, 3));
-          el.innerHTML = v.toFixed(dec) + suffix;
-          if (p < 1) requestAnimationFrame(tick);
-        })(t0);
-      });
-    }, { threshold: .6 });
-    $$('[data-count]').forEach(function (el) { cio.observe(el); });
-  }
-
-  /* blog filter + search */
-  var posts = $$('#posts .post'), q = $('#q'), empty = $('#empty'), cat = 'all';
-  function filterPosts() {
-    var term = q.value.trim().toLowerCase(), shown = 0;
-    posts.forEach(function (p) {
-      var hay = (p.textContent + ' ' + p.dataset.text).toLowerCase();
-      var ok = (cat === 'all' || p.dataset.cat.split(' ').indexOf(cat) > -1) && (!term || hay.indexOf(term) > -1);
-      p.hidden = !ok; if (ok) shown++;
-    });
-    empty.style.display = shown ? 'none' : 'block';
-  }
-  $$('.chip').forEach(function (c) {
-    c.addEventListener('click', function () {
-      $$('.chip').forEach(function (o) { o.setAttribute('aria-pressed', o === c ? 'true' : 'false'); });
-      cat = c.dataset.filter; filterPosts();
-    });
-  });
-  q.addEventListener('input', filterPosts);
-
-  /* hero canvas: risk gate simulation */
-  var cv = $('#gate'), ctx = cv.getContext('2d'), frame = $('#frame');
-  var modes = [{ name: 'Loose', thr: .5 }, { name: 'Default', thr: .6 }, { name: 'Strict', thr: .8 }];
-  var mi = 1, W = 0, H = 0, parts = [], seen = 0, passed = 0, blocked = 0, spawnT = 0, raf = null;
-  var gates = [{ x: .3, n: 'CONF' }, { x: .48, n: 'EDGE' }, { x: .66, n: 'EXPO' }, { x: .84, n: 'DUPE' }];
-  var R = { seen: $('#rSeen'), pass: $('#rPass'), block: $('#rBlock'), rate: $('#rRate') }, modeTag = $('#modeTag');
-
-  function size() {
-    var dpr = Math.min(2, window.devicePixelRatio || 1), r = cv.getBoundingClientRect();
-    W = r.width; H = r.height;
-    cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    if (reduce) staticFrame(); else draw();
-  }
-  function spawn() {
-    parts.push({ x: -.01, y: .14 + Math.random() * .58, v: .0018 + Math.random() * .0016,
-      c: Math.random() * .5 + .45, e: Math.random() * .09, ex: Math.random() > .08, du: Math.random() > .07,
-      g: 0, dead: false, fade: 1 });
-  }
-  function check(p, i) {
-    if (i === 0) return p.c >= modes[mi].thr;
-    if (i === 1) return p.e >= .03;
-    if (i === 2) return p.ex;
-    return p.du;
-  }
-  function step() {
-    spawnT++; if (spawnT % 9 === 0) spawn();
-    parts.forEach(function (p) {
-      if (p.dead) { p.fade -= .03; p.y += .002; return; }
-      p.x += p.v;
-      if (p.g < gates.length && p.x >= gates[p.g].x) {
-        if (check(p, p.g)) p.g++;
-        else { p.dead = true; blocked++; seen++; }
-      }
-      if (!p.dead && p.x > 1.02) { p.fade = 0; passed++; seen++; }
-    });
-    parts = parts.filter(function (p) { return p.fade > 0; });
-  }
-  function draw() {
-    ctx.clearRect(0, 0, W, H);
-    var top = H * .1, bot = H * .74;
-    ctx.font = '500 9px Inter, sans-serif'; ctx.textAlign = 'center';
-    gates.forEach(function (g, i) {
-      var x = Math.round(g.x * W) + .5;
-      ctx.strokeStyle = '#2E2E2E'; ctx.lineWidth = 1;
-      ctx.beginPath(); ctx.moveTo(x, top); ctx.lineTo(x, bot); ctx.stroke();
-      ctx.fillStyle = i === 0 ? '#D08A4E' : '#707070';
-      ctx.fillText(i === 0 ? g.n + ' ' + Math.round(modes[mi].thr * 100) : g.n, x, bot + 14);
-    });
-    parts.forEach(function (p) {
-      var x = p.x * W, y = p.y * H;
-      ctx.globalAlpha = Math.max(0, p.fade);
-      if (p.dead) { ctx.fillStyle = '#707070'; ctx.fillRect(x - 2, y - 2, 4, 4); }
-      else {
-        ctx.fillStyle = '#D08A4E'; ctx.beginPath(); ctx.arc(x, y, 1.5 + p.c * 2.2, 0, 6.283); ctx.fill();
-        ctx.globalAlpha = .18; ctx.fillRect(x - 18, y - .5, 18, 1);
-      }
-    });
-    ctx.globalAlpha = 1;
-    R.seen.textContent = seen; R.pass.textContent = passed; R.block.textContent = blocked;
-    R.rate.textContent = (seen ? Math.round(passed / seen * 100) : 0) + '%';
-  }
-  function loop() { step(); draw(); raf = requestAnimationFrame(loop); }
-  function staticFrame() { parts = []; seen = passed = blocked = 0; spawnT = 0; for (var i = 0; i < 900; i++) step(); draw(); }
-  function cycle() {
-    mi = (mi + 1) % modes.length;
-    modeTag.textContent = modes[mi].name + ' · ' + Math.round(modes[mi].thr * 100) + '%';
-    seen = passed = blocked = 0;
-    if (reduce) staticFrame(); else draw();
-  }
-  frame.addEventListener('click', cycle);
-  cv.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); cycle(); } });
-  addEventListener('resize', size);
-  size();
-  if (!reduce) {
-    new IntersectionObserver(function (es) {
-      if (es[0].isIntersecting) { if (!raf) raf = requestAnimationFrame(loop); }
-      else if (raf) { cancelAnimationFrame(raf); raf = null; }
-    }).observe(cv);
-  }
-
-  /* calculator */
-  var cTx = $('#cTx'), cMin = $('#cMin'), GREEN = .59, GLANCE = .15;
-  function calc() {
-    var tx = +cTx.value, mn = +cMin.value;
-    var rate = +$('input[name=rate]:checked').value, mode = $('input[name=mode]:checked').value;
-    $('#oTx').textContent = tx.toLocaleString(); $('#oMin').textContent = mn;
-    var manual = tx * mn / 60;
-    var auto = manual * ((1 - GREEN) + (mode === 'glance' ? GREEN * GLANCE : 0));
-    var saved = manual - auto;
-    $('#kManual').textContent = manual.toFixed(1);
-    $('#kAuto').textContent = auto.toFixed(1);
-    $('#kSaved').textContent = saved.toFixed(1);
-    $('#kMoney').textContent = '$' + Math.round(saved * rate * 12).toLocaleString();
-    $('#lblGreen').textContent = mode === 'glance' ? 'GREEN 59% · GLANCE' : 'GREEN 59% · AUTO';
-  }
-  $('#calcForm').addEventListener('input', calc);
-  $('#calcForm').addEventListener('change', calc);
-  calc();
-
-  /* tabs */
-  var tabs = $$('[role=tab]');
-  function fillMeters(panel) {
-    var bars = $$('.bar i', panel);
-    bars.forEach(function (i) { i.style.width = '0'; });
-    requestAnimationFrame(function () { requestAnimationFrame(function () {
-      bars.forEach(function (i) { i.style.width = i.dataset.w + '%'; });
-    }); });
-  }
-  function select(t, focus) {
-    tabs.forEach(function (o) {
-      var on = o === t;
-      o.setAttribute('aria-selected', on ? 'true' : 'false'); o.tabIndex = on ? 0 : -1;
-      $('#' + o.getAttribute('aria-controls')).hidden = !on;
-    });
-    if (focus) t.focus();
-    fillMeters($('#' + t.getAttribute('aria-controls')));
-  }
-  tabs.forEach(function (t, i) {
-    t.addEventListener('click', function () { select(t); });
-    t.addEventListener('keydown', function (e) {
-      var n = { ArrowRight: i + 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[e.key];
-      if (n === undefined) return;
-      e.preventDefault(); select(tabs[(n + tabs.length) % tabs.length], true);
-    });
-  });
-  var tio = new IntersectionObserver(function (es) {
-    if (es[0].isIntersecting) { fillMeters($('.panel:not([hidden])')); tio.disconnect(); }
-  }, { threshold: .3 });
-  tio.observe($('#tabs'));
-
-  /* process line */
-  var stepsEl = $('#steps'), fill = $('#stepsFill'), stepEls = $$('.step');
-  function fillSteps() {
-    var r = stepsEl.getBoundingClientRect(), mid = innerHeight / 2;
-    var p = Math.max(0, Math.min(1, (mid - r.top) / r.height));
-    fill.style.height = (p * (r.height - 16)) + 'px';
-    stepEls.forEach(function (s) { s.classList.toggle('lit', s.getBoundingClientRect().top + 12 < mid); });
-  }
-
-  /* carousel */
-  var track = $('#track');
-  function page(dir) {
-    var card = $('.card', track), w = card ? card.getBoundingClientRect().width + 20 : 300;
-    track.scrollBy({ left: dir * w, behavior: reduce ? 'auto' : 'smooth' });
-  }
-  $('#prev').addEventListener('click', function () { page(-1); });
-  $('#next').addEventListener('click', function () { page(1); });
-
-  /* contact form */
-  var cur = 1, names = ['The work', 'Details', 'Your info'];
-  var form = $('#cform'), back = $('#fBack'), next = $('#fNext');
-  function show(n) {
-    cur = n;
-    $$('.fstep', form).forEach(function (f) { f.hidden = +f.dataset.step !== n; });
-    $('#fLabel').textContent = 'Step ' + n + ' of 3';
-    $('#fName').textContent = names[n - 1];
-    $('#fBar').style.width = (n / 3 * 100) + '%';
-    back.disabled = n === 1;
-    next.textContent = n === 3 ? 'Send' : 'Continue';
-  }
-  back.addEventListener('click', function () { if (cur > 1) show(cur - 1); });
-  form.addEventListener('submit', function (e) {
+  /* ---------- contact form (mailto) ---------- */
+  var cform=document.getElementById('cform');
+  if(cform) cform.addEventListener('submit',function(e){
     e.preventDefault();
-    if (cur < 3) {
-      show(cur + 1);
-      var first = $('.fstep:not([hidden]) textarea, .fstep:not([hidden]) input', form);
-      if (first) first.focus();
-      return;
+    var n=cform.elements.name.value.trim(),ty=cform.elements.type.value,ms=cform.elements.msg.value.trim();
+    location.href='mailto:dashakid@live.com?subject='+encodeURIComponent('Project: '+ty)+'&body='+encodeURIComponent(ms+'\n\n— '+n);
+  });
+  /* ---------- reveals ---------- */
+  var revealed=false;
+  function startReveals(){
+    if(revealed) return; revealed=true;
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if(e.isIntersecting){
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      });
+    },{threshold:.15});
+    document.querySelectorAll('.rv').forEach(function(el,i){
+      el.style.transitionDelay=(el.closest('.grid')?(i%2)*90:0)+'ms';
+      io.observe(el);
+    });
+  }
+
+  /* ---------- scroll state ---------- */
+  var progTarget=0,prog=0;
+  var progbar=document.getElementById('progbar'),depthEl=document.getElementById('depth');
+  function onScroll(){
+    var max=document.documentElement.scrollHeight-innerHeight;
+    progTarget=max>0?Math.min(1,Math.max(0,scrollY/max)):0;
+  }
+  addEventListener('scroll',onScroll,{passive:true});
+  addEventListener('resize',onScroll);
+  onScroll();
+
+  var mouse={x:0,y:0,tx:0,ty:0};
+  if(!RM) addEventListener('pointermove',function(e){mouse.tx=e.clientX/innerWidth-.5;mouse.ty=e.clientY/innerHeight-.5;});
+
+  /* ---------- WebGL: Viejo San Juan → la playa ---------- */
+  if(typeof THREE==='undefined'){ready=true;return;}
+  var canvas=document.getElementById('scene');
+  var renderer;
+  try{renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:true,powerPreference:'high-performance'});}
+  catch(e){ready=true;return;}
+  var mobile=innerWidth<760;
+  renderer.setPixelRatio(Math.min(devicePixelRatio,mobile?1.5:1.5));
+  renderer.setSize(innerWidth,innerHeight);
+
+  var scene=new THREE.Scene();
+  var camera=new THREE.PerspectiveCamera(60,innerWidth/innerHeight,0.3,1600);
+  scene.fog=new THREE.Fog(0xffffff,90,430);
+
+  var U={
+    uFog:{value:new THREE.Color()},uNear:{value:90},uFar:{value:430},uTime:{value:0},
+    uSunDir:{value:new THREE.Vector3(0,.3,-1).normalize()},uSunCol:{value:new THREE.Color()},
+    uZen:{value:new THREE.Color()},uHor:{value:new THREE.Color()},uEvening:{value:0},uShadowL:{value:0}
+  };
+  function C(h){return new THREE.Color(h);}
+  var rnd=(function(s){return function(){s=(s*16807)%2147483647;return (s-1)/2147483646;};})(1521);
+  var FOG_GLSL='float fo=smoothstep(uNear,uFar,vD);';
+  var HILL=32;function gy(z){var t=Math.min(1,Math.max(0,(z+290)/240));return HILL*t*t*(3-2*t);}
+
+  /* sky */
+  var sky=new THREE.Mesh(new THREE.SphereBufferGeometry(900,32,16),new THREE.ShaderMaterial({
+    uniforms:{uZen:U.uZen,uHor:U.uHor,uSunDir:U.uSunDir,uSunCol:U.uSunCol},
+    vertexShader:'varying vec3 vDir;void main(){vDir=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
+    fragmentShader:[
+      'uniform vec3 uZen;uniform vec3 uHor;uniform vec3 uSunDir;uniform vec3 uSunCol;varying vec3 vDir;',
+      'void main(){vec3 d=normalize(vDir);float h=max(d.y,0.0);',
+      ' vec3 col=mix(uHor,uZen,pow(h,0.45));',
+      ' col=mix(col,uHor*vec3(1.0,0.82,0.85),exp(-h*14.0)*0.35);',
+      ' float s=max(dot(d,uSunDir),0.0);',
+      ' col+=uSunCol*(pow(s,900.0)*6.0+pow(s,80.0)*0.22+pow(s,6.0)*0.08);',
+      ' gl_FragColor=vec4(col,1.0);}'].join('\n'),
+    side:THREE.BackSide,depthWrite:false,fog:false
+  }));
+  sky.renderOrder=-1;scene.add(sky);
+
+  var hemi=new THREE.HemisphereLight(0xbfd8ff,0xb08a60,0.75);scene.add(hemi);
+  var sunL=new THREE.DirectionalLight(0xfff0d0,0.9);scene.add(sunL);
+
+  /* --- casas coloniales --- */
+  var PAL=['#f3ead7','#efe4c8','#f7f2e6','#f3ead7','#dfe9f0','#bcd6e6','#a8cfe0','#f2c9b8','#f4d58a','#e9b9a0','#c7dcc0','#e58f7a','#6fa8c9','#f0b84c','#d9c7e6','#f6e7c1'].map(C);
+  var SHUT=['#2f5d50','#1f4e79','#f4f1ea','#7a4b2a','#3b7d4f','#2a6f8f'].map(C);
+  var STREETS=[-90,-60,-30,0,30,60,90];
+  function hw(s){return s===0?4:3.5;}
+  var ZB=[[60,33.5],[26.5,-26.5],[-33.5,-86.5],[-93.5,-146.5],[-153.5,-206.5],[-213.5,-266.5],[-273.5,-289]];
+  var CROSS=[30,-30,-90,-150,-210,-270];
+
+  var H={m:[],seed:[],col:[],shut:[],h:[],base:[]};
+  var balc=[],rails=[],plants=[],deco=[],tanks=[];
+  var m=new THREE.Matrix4(),q=new THREE.Quaternion(),pos=new THREE.Vector3(),scl=new THREE.Vector3();
+
+  function addHouse(xa,xb,za,zb,facadeX,facing){
+    var nF=rnd()<0.12?4:(rnd()<0.5?2:3);
+    if(facadeX!==null&&nF<3&&rnd()<.5) nF=3;
+    var h=nF*4.2+1.0+rnd()*0.4,w=za-zb,zc=(za+zb)/2,base=gy(zc);
+    pos.set((xa+xb)/2,base+(h-3)/2,zc);scl.set(xb-xa,h+3,w);m.compose(pos,q,scl);H.m.push(m.clone());
+    var seed=rnd()*10;H.seed.push(seed);H.h.push(h);H.base.push(base);
+    var c=PAL[(rnd()*PAL.length)|0],s=SHUT[(rnd()*SHUT.length)|0];
+    H.col.push(c.r,c.g,c.b);H.shut.push(s.r,s.g,s.b);
+    if(rnd()<0.35) tanks.push([(xa+xb)/2+(rnd()-.5)*(xb-xa)*0.5,base+h+0.6,zc+(rnd()-.5)*w*0.4,rnd()<0.5?0x1a1a1a:0x2a5d8f]);
+    if(rnd()<0.25) deco.push([(xa+xb)/2+(rnd()-.5)*(xb-xa)*0.4,base+h+1.1,zc,2.2,2.2,Math.min(2.6,w*0.6),0xe9e4d8]);
+    if(facadeX===null) return;
+    deco.push([facadeX+facing*0.22,base+h-0.45,zc,0.5,0.32,w,0xf6f1e6]);
+    for(var f2=1;f2<nF;f2++) deco.push([facadeX+facing*0.12,base+f2*4.2,zc,0.26,0.16,w,0xf6f1e6]);
+    // balconies on the main calle, aligned to the window bays in the shader
+    var k0=Math.ceil((zb+1.2+seed*3.7-1.5)/3),k1=Math.floor((za-1.2+seed*3.7-1.5)/3);
+    for(var k=k0;k<=k1;k++){
+      var bz=3*k+1.5-seed*3.7;
+      for(var fl=1;fl<nF;fl++){
+        if(rnd()>0.65){
+          deco.push([facadeX+facing*0.14,base+fl*4.2+0.85*4.2+0.12,bz,0.28,0.14,1.7,0xf4efe4]);
+          deco.push([facadeX+facing*0.12,base+fl*4.2+0.16*4.2-0.06,bz,0.24,0.1,1.6,0xf4efe4]);
+          if(rnd()<0.55){deco.push([facadeX+facing*0.3,base+fl*4.2+0.48*4.2,bz-0.66,0.55,2.6,0.07,s.getHex()]);deco.push([facadeX+facing*0.3,base+fl*4.2+0.48*4.2,bz+0.66,0.55,2.6,0.07,s.getHex()]);}
+          continue;}
+        var by=base+fl*4.2+0.16*4.2-0.09;
+        balc.push([facadeX+facing*0.45,by,bz]);
+        rails.push([facadeX+facing*0.9,by+0.55,bz]);
+        if(rnd()<0.45) plants.push([facadeX+facing*0.5,by+0.5,bz+(rnd()-.5)*1.2,rnd()<0.3?1:0]);
+      }
     }
-    var n = $('#fN'), m = $('#fE'), badN = !n.value.trim(), badE = !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m.value.trim());
-    $('#eN').textContent = badN ? 'Add your name so I know who I’m writing to.' : '';
-    $('#eE').textContent = badE ? 'That email doesn’t look right.' : '';
-    n.setAttribute('aria-invalid', badN); m.setAttribute('aria-invalid', badE);
-    if (badN || badE) { (badN ? n : m).focus(); return; }
-    var kind = $('input[name=kind]:checked', form).value;
-    var body = 'Project: ' + kind + '\nTimeline: ' + $('#fWhen').value + '\n\nHow it works today:\n' + $('#fDesc').value +
-      '\n\n' + n.value.trim() + ' (' + m.value.trim() + ')';
-    location.href = 'mailto:dashakid@live.com?subject=' + encodeURIComponent('Project: ' + kind) + '&body=' + encodeURIComponent(body);
-    $('#dName').textContent = n.value.trim().split(' ')[0];
-    $('#formSteps').hidden = true; $('#done').hidden = false; $('#done').focus();
+  }
+  for(var si=0;si<STREETS.length-1;si++){
+    var x0=STREETS[si]+hw(STREETS[si]),x1=STREETS[si+1]-hw(STREETS[si+1]),mid=(x0+x1)/2;
+    ZB.forEach(function(b){
+      [[x0,mid],[mid,x1]].forEach(function(r,ri){
+        var z=b[0];
+        var onMain=(ri===0&&x0===4)?[4,-1]:((ri===1&&x1===-4)?[-4,1]:null);
+        while(z>b[1]+0.01){
+          var w=5+rnd()*3.5;if(z-w<b[1]+3.5) w=z-b[1];
+          addHouse(r[0],r[1],z,z-w,onMain?onMain[0]:null,onMain?onMain[1]:0);
+          z-=w;
+        }
+      });
+    });
+  }
+
+  var hGeo=new THREE.BoxBufferGeometry(1,1,1);
+  hGeo.setAttribute('aSeed',new THREE.InstancedBufferAttribute(new Float32Array(H.seed),1));
+  hGeo.setAttribute('aCol',new THREE.InstancedBufferAttribute(new Float32Array(H.col),3));
+  hGeo.setAttribute('aShut',new THREE.InstancedBufferAttribute(new Float32Array(H.shut),3));
+  hGeo.setAttribute('aH',new THREE.InstancedBufferAttribute(new Float32Array(H.h),1));
+  hGeo.setAttribute('aBase',new THREE.InstancedBufferAttribute(new Float32Array(H.base),1));
+  var hMat=new THREE.ShaderMaterial({
+    uniforms:U,
+    vertexShader:[
+      'attribute float aSeed;attribute vec3 aCol;attribute vec3 aShut;attribute float aH;attribute float aBase;',
+      'varying vec3 vW;varying vec3 vN;varying float vS;varying vec3 vC;varying vec3 vSh;varying float vH;varying float vB;varying vec3 vP;varying vec3 vSc;varying float vD;',
+      'void main(){vec4 w=modelMatrix*instanceMatrix*vec4(position,1.0);',
+      ' vW=w.xyz;vN=normalize(mat3(instanceMatrix)*normal);vS=aSeed;vC=aCol;vSh=aShut;vH=aH;vB=aBase;vP=position;vSc=vec3(length(instanceMatrix[0].xyz),length(instanceMatrix[1].xyz),length(instanceMatrix[2].xyz));',
+      ' vec4 mv=viewMatrix*w;vD=-mv.z;gl_Position=projectionMatrix*mv;}'].join('\n'),
+    fragmentShader:[
+      'uniform vec3 uFog;uniform float uNear;uniform float uFar;uniform float uTime;uniform vec3 uSunDir;uniform vec3 uSunCol;uniform vec3 uZen;uniform float uEvening;',
+      'varying vec3 vW;varying vec3 vN;varying float vS;varying vec3 vC;varying vec3 vSh;varying float vH;varying float vB;varying vec3 vP;varying vec3 vSc;varying float vD;',
+      'float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
+      'float vn(vec2 p){vec2 i=floor(p);vec2 f=fract(p);f=f*f*(3.0-2.0*f);return mix(mix(h(i),h(i+vec2(1.0,0.0)),f.x),mix(h(i+vec2(0.0,1.0)),h(i+vec2(1.0,1.0)),f.x),f.y);}',
+      'void main(){',
+      ' vec3 n=normalize(vN);vec3 col;vec3 emis=vec3(0.0);',
+      ' if(n.y>0.5){vec2 e=(0.5-abs(vP.xz))*vSc.xz;float rim=step(min(e.x,e.y),0.32);',
+      '  float terr=step(0.72,h(vec2(vS,3.1)));',
+      '  vec3 roof=mix(vec3(0.6,0.58,0.55)*(0.8+0.35*h(vec2(vS,9.0)))*(0.9+0.2*vn(vW.xz*0.6)),vec3(0.74,0.37,0.24)*(0.78+0.22*step(0.5,fract(vW.x*1.6))),terr);',
+      '  col=mix(roof,mix(vC,vec3(0.95),0.5),rim);}',
+      ' else if(n.y<-0.5){col=vC*0.3;}',
+      ' else{',
+      '  float u=abs(n.x)>0.5?vW.z:vW.x;float y=vW.y-vB;const float FH=4.2;',
+      '  float nF=floor((vH-1.0)/FH);float fl=floor(y/FH);float fy=fract(y/FH);',
+      '  float uu=(u+vS*3.7)/3.0;float bx=fract(uu);vec2 cell=vec2(floor(uu),fl);',
+      '  col=vC;',
+      '  if(y<0.55) col=vC*0.72;',
+      '  float trim=0.0;',
+      '  if(fl>0.0&&fy<0.05&&fl<=nF) trim=1.0;',
+      '  if(y>vH-0.95&&y<vH-0.65) trim=1.0;',
+      '  if(y>vH-0.22) trim=1.0;',
+      '  col=mix(col,vec3(0.97,0.95,0.9),trim);',
+      '  if(fl<nF&&fl>-0.5&&trim<0.5){',
+      '   float y0=fl<0.5?0.0:0.16;float y1=0.8;',
+      '   float frm=step(0.26,bx)*step(bx,0.74)*step(y0,fy)*step(fy,y1+0.05);',
+      '   float opn=step(0.30,bx)*step(bx,0.70)*step(y0,fy)*step(fy,y1);',
+      '   float arch=step(fl,0.5)*step(0.35,h(vec2(vS,1.7)));',
+      '   vec2 ap=vec2((bx-0.5)*3.0,fy*4.2-(y1*4.2-0.6));float al=length(ap);',
+      '   if(arch>0.5&&ap.y>0.0){opn*=step(al,0.6);frm*=step(al,0.78);}',
+      '   if(fl>0.5&&bx>0.24&&bx<0.76){if(fy>y0-0.03&&fy<y0) col=vec3(0.93,0.91,0.87);else if(fy>y0-0.055&&fy<=y0-0.03) col*=0.72;}',
+      '   if(frm>0.5) col=vec3(0.96,0.94,0.9);',
+      '   if(opn>0.5){',
+      '    vec3 sh=vSh*(0.78+0.22*step(0.5,fract(y*7.0)));',
+      '    sh*=1.0-0.55*(1.0-smoothstep(0.0,0.012,abs(bx-0.5)));',
+      '    float r=h(cell+vS);',
+      '    if(r<0.4){',
+      '     float side=step(bx,0.355)+step(0.645,bx);',
+      '     float lit=step(0.4,h(cell+vS+5.0))*uEvening;',
+      '     col=mix(vec3(0.07,0.05,0.04),sh,side);',
+      '     emis=(1.0-side)*lit*vec3(1.0,0.66,0.32)*1.3;',
+      '    } else col=sh;',
+      '    float rv=1.0;if(arch>0.5&&ap.y>0.0){if(al>0.47) rv=0.5;}else if(fy>y1-0.04) rv=0.5;',
+      '    if(bx<0.325) rv*=0.62;col*=rv;',
+      '   }',
+      '  }',
+      '  col*=0.86+0.22*vn(vec2(u*0.35+vS*10.0,y*0.5));',
+      '  col*=1.0-0.2*h(vec2(floor(u*3.0),vS))*smoothstep(vH-4.5,vH-0.95,y)*step(y,vH-0.95);',
+      '  col*=mix(0.66,1.0,smoothstep(0.0,2.4,y));',
+      ' }',
+      ' float sun=max(dot(n,uSunDir),0.0);',
+      ' vec3 lightC=vec3(0.45)+uZen*0.2+uSunCol*sun*0.7;',
+      ' col=col*lightC+emis;',
+      ' '+FOG_GLSL,
+      ' gl_FragColor=vec4(mix(col,uFog,fo),1.0);',
+      '}'].join('\n')
+  });
+  var houses=new THREE.InstancedMesh(hGeo,hMat,H.m.length);
+  H.m.forEach(function(mm,i){houses.setMatrixAt(i,mm);});
+  houses.frustumCulled=false;scene.add(houses);
+  var tc2=new THREE.Color();
+  var decoMesh=new THREE.InstancedMesh(new THREE.BoxBufferGeometry(1,1,1),new THREE.MeshLambertMaterial({color:0xffffff}),Math.max(1,deco.length));
+  deco.forEach(function(d,i){pos.set(d[0],d[1],d[2]);scl.set(d[3],d[4],d[5]);m.compose(pos,q,scl);decoMesh.setMatrixAt(i,m);if(decoMesh.setColorAt)decoMesh.setColorAt(i,tc2.setHex(d[6]));});
+  decoMesh.count=deco.length;decoMesh.frustumCulled=false;scene.add(decoMesh);
+  var tankMesh=new THREE.InstancedMesh(new THREE.CylinderBufferGeometry(0.7,0.7,1.2,10),new THREE.MeshLambertMaterial({color:0xffffff}),Math.max(1,tanks.length));
+  tanks.forEach(function(d,i){pos.set(d[0],d[1],d[2]);scl.set(1,1,1);m.compose(pos,q,scl);tankMesh.setMatrixAt(i,m);if(tankMesh.setColorAt)tankMesh.setColorAt(i,tc2.setHex(d[3]));});
+  tankMesh.count=tanks.length;tankMesh.frustumCulled=false;scene.add(tankMesh);
+
+  /* balconies: slab + iron railing */
+  function instanced(geo,mat,list,sx,sy,sz){
+    var im=new THREE.InstancedMesh(geo,mat,Math.max(1,list.length));
+    list.forEach(function(p,i){pos.set(p[0],p[1],p[2]);scl.set(sx,sy,sz);m.compose(pos,q,scl);im.setMatrixAt(i,m);});
+    im.count=list.length;scene.add(im);return im;
+  }
+  instanced(new THREE.BoxBufferGeometry(1,1,1),new THREE.MeshLambertMaterial({color:0xf3efe6}),balc,0.9,0.18,2.1);
+  var rc=document.createElement('canvas');rc.width=128;rc.height=32;var rx=rc.getContext('2d');
+  rx.fillStyle='#000';rx.fillRect(0,0,128,32);rx.fillStyle='#fff';
+  rx.fillRect(0,0,128,3);rx.fillRect(0,29,128,3);for(var b=0;b<14;b++) rx.fillRect(b*9.2+2,0,2,32);
+  var railTex=new THREE.CanvasTexture(rc);
+  instanced(new THREE.BoxBufferGeometry(1,1,1),new THREE.MeshLambertMaterial({color:0x1e2b27,alphaMap:railTex,alphaTest:0.5,side:THREE.DoubleSide}),rails,0.05,1.0,2.1);
+
+  /* faroles */
+  var lampsPos=[];
+  for(var lz=55;lz>-288;lz-=14){
+    var nearCross=CROSS.some(function(c){return Math.abs(lz-c)<5;});
+    if(!nearCross){lampsPos.push([3.55,gy(lz)+6.2,lz]);lampsPos.push([-3.55,gy(lz)+6.2,lz]);}
+  }
+  var lampMat=new THREE.MeshBasicMaterial({color:0xffd08a});
+  instanced(new THREE.SphereBufferGeometry(0.5,10,8),lampMat,lampsPos,0.55,0.75,0.55);
+  instanced(new THREE.BoxBufferGeometry(1,1,1),new THREE.MeshLambertMaterial({color:0x1b1f22}),lampsPos.map(function(p){return [p[0],p[1]+0.5,p[2]];}),0.7,0.18,0.7);
+
+  /* adoquines (blue cobblestone) */
+  var ground=new THREE.Mesh((function(){var g=new THREE.PlaneBufferGeometry(1400,365,1,140).rotateX(-Math.PI/2).translate(0,0,-118),a=g.attributes.position;for(var i=0;i<a.count;i++)a.setY(i,gy(a.getZ(i)));return g;})(),new THREE.ShaderMaterial({
+    uniforms:U,
+    vertexShader:'varying vec3 vW;varying float vD;void main(){vec4 w=modelMatrix*vec4(position,1.0);vW=w.xyz;vec4 mv=viewMatrix*w;vD=-mv.z;gl_Position=projectionMatrix*mv;}',
+    fragmentShader:[
+      'uniform vec3 uFog;uniform float uNear;uniform float uFar;uniform vec3 uSunCol;uniform vec3 uZen;uniform vec3 uSunDir;uniform float uShadowL;varying vec3 vW;varying float vD;',
+      'float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
+      'void main(){vec2 p=vec2(vW.x*1.7,vW.z*2.3);float row=floor(p.y);p.x+=mod(row,2.0)*0.5;',
+      ' vec2 c=floor(p);vec2 f=fract(p);',
+      ' float mortar=smoothstep(0.0,0.09,f.x)*smoothstep(1.0,0.91,f.x)*smoothstep(0.0,0.1,f.y)*smoothstep(1.0,0.9,f.y);',
+      ' vec3 stone=vec3(0.30,0.40,0.52)*(0.8+0.4*h(c));',
+      ' vec3 col=mix(vec3(0.12,0.14,0.17),stone,mortar);',
+      ' col=mix(col,vec3(0.31,0.40,0.5),smoothstep(25.0,90.0,vD));',
+      ' float ax=abs(vW.x);float cd=abs(mod(vW.z,60.0)-30.0);',
+      ' if(ax>3.0&&ax<4.2&&cd>3.5&&vW.z<60.0&&vW.z>-289.0) col=ax<3.2?vec3(0.95,0.78,0.12):vec3(0.74,0.72,0.68);',
+      ' float sx=smoothstep(3.7-uShadowL,4.3-uShadowL,vW.x)*step(vW.x,4.2)*step(3.5,cd)*step(vW.z,60.0)*step(-289.0,vW.z)*step(0.05,uShadowL);',
+      ' col*=1.0-0.42*sx;',
+      ' col*=vec3(0.7)+uSunCol*0.35+uZen*0.15;',
+      ' vec3 Vd=normalize(cameraPosition-vW);vec3 nn=normalize(vec3((h(c)-0.5)*0.3,1.0,(h(c+3.0)-0.5)*0.3));',
+      ' col+=uSunCol*pow(max(dot(reflect(-uSunDir,nn),Vd),0.0),50.0)*0.9*mortar*(1.0-sx);',
+      ' '+FOG_GLSL,
+      ' gl_FragColor=vec4(mix(col,uFog,fo),1.0);}'].join('\n')
+  }));
+  scene.add(ground);
+
+  /* matas en los balcones */
+  var plantMesh=new THREE.InstancedMesh(new THREE.IcosahedronBufferGeometry(0.5,1),new THREE.MeshLambertMaterial({color:0xffffff}),Math.max(1,plants.length));
+  plants.forEach(function(p,i){pos.set(p[0],p[1],p[2]);scl.set(0.8,0.7+rnd()*0.5,1.1);m.compose(pos,q,scl);plantMesh.setMatrixAt(i,m);
+    if(plantMesh.setColorAt) plantMesh.setColorAt(i,C(p[3]?'#d6336c':(rnd()<.5?'#3f8f3a':'#5aa646')));});
+  plantMesh.count=plants.length;scene.add(plantMesh);
+
+  /* carros estacionados */
+  var carCols=['#d9d9d6','#2b2f36','#b3261e','#1f4e79','#8a8f96','#f2f2f2','#27445d'],carZ=[];
+  for(var cz=-98;cz>-282;cz-=6.4){
+    if(CROSS.some(function(c){return Math.abs(cz-c)<7;})||rnd()<0.2) continue;carZ.push(cz);}
+  var unitBox=new THREE.BoxBufferGeometry(1,1,1),CN=Math.max(1,carZ.length);
+  var carBody=new THREE.InstancedMesh(unitBox,new THREE.MeshLambertMaterial({color:0xffffff}),CN);
+  var carCab=new THREE.InstancedMesh(unitBox,new THREE.MeshLambertMaterial({color:0x18222c}),CN);
+  var carUnder=new THREE.InstancedMesh(unitBox,new THREE.MeshLambertMaterial({color:0x0c0c0c}),CN);
+  var eul=new THREE.Euler(),qq=new THREE.Quaternion(),off=new THREE.Vector3();
+  function carPart(mesh,i,z,ly,lz,sx,sy,sz){
+    qq.setFromEuler(eul.set(-Math.atan(gy(z+0.5)-gy(z-0.5)),0,0));
+    off.set(0,ly,lz).applyQuaternion(qq);pos.set(-2.15,gy(z),z).add(off);scl.set(sx,sy,sz);m.compose(pos,qq,scl);mesh.setMatrixAt(i,m);}
+  carZ.forEach(function(z,i){
+    carPart(carUnder,i,z,0.22,0,1.7,0.44,3.5);
+    carPart(carBody,i,z,0.72,0,1.8,0.7,4.3);
+    carPart(carCab,i,z,1.32,0.25,1.6,0.56,2.3);
+    if(carBody.setColorAt) carBody.setColorAt(i,C(carCols[(rnd()*carCols.length)|0]));});
+  [carBody,carCab,carUnder].forEach(function(c){c.count=carZ.length;scene.add(c);});
+
+  /* cables */
+  var wireMat=new THREE.LineBasicMaterial({color:0x151515});
+  for(var wz=-105;wz>-280;wz-=23){
+    var pts=[],wz2=wz-5-rnd()*6,ya=gy(wz)+8.5+rnd()*2,yb=gy(wz2)+8+rnd()*2;
+    for(var wk=0;wk<=16;wk++){var wt=wk/16;pts.push(new THREE.Vector3(-4+8*wt,ya+(yb-ya)*wt-Math.sin(Math.PI*wt)*0.7,wz+(wz2-wz)*wt));}
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),wireMat));}
+
+  /* montes al otro lado de la bahía */
+  var hillGeo=new THREE.PlaneBufferGeometry(3200,1,160,1),hp=hillGeo.attributes.position;
+  for(var hi=0;hi<hp.count;hi++){var hx=hp.getX(hi);
+    if(hp.getY(hi)>0){var hh=32+24*Math.sin(hx*0.0041+1.3)+14*Math.sin(hx*0.011+0.4)+6*Math.sin(hx*0.031);
+      hh*=1.25-0.55*THREE.MathUtils.smoothstep(hx,-500,300);hp.setY(hi,Math.max(6,hh));}else hp.setY(hi,-2);}
+  var HILL0=C('#7fa596'),HILL1=C('#4a3550'),hillMat=new THREE.MeshBasicMaterial({color:0x7fa596,fog:false});
+  var hills=new THREE.Mesh(hillGeo,hillMat);hills.position.set(0,0,-1300);scene.add(hills);
+
+  /* la muralla + garitas */
+  var stone=new THREE.MeshLambertMaterial({color:0xc9b28c});
+  var stoneLight=new THREE.MeshLambertMaterial({color:0xdcc7a3});
+  [-1,1].forEach(function(s){
+    var wall=new THREE.Mesh(new THREE.BoxBufferGeometry(191,7,4),stone);wall.position.set(s*104.5,3.5,-300);scene.add(wall);
+    var cap=new THREE.Mesh(new THREE.BoxBufferGeometry(191,0.45,4.6),stoneLight);cap.position.set(s*104.5,7.2,-300);scene.add(cap);
+    var g=new THREE.Group();
+    var corbel=new THREE.Mesh(new THREE.CylinderBufferGeometry(1.7,0.5,1.6,20),stoneLight);corbel.position.y=-0.8;g.add(corbel);
+    var body=new THREE.Mesh(new THREE.CylinderBufferGeometry(1.5,1.5,3.6,20),stone);body.position.y=1.8;g.add(body);
+    var ring=new THREE.Mesh(new THREE.CylinderBufferGeometry(1.75,1.75,0.3,20),stoneLight);ring.position.y=3.7;g.add(ring);
+    var dome=new THREE.Mesh(new THREE.SphereBufferGeometry(1.6,20,10,0,Math.PI*2,0,Math.PI/2),stone);dome.position.y=3.85;g.add(dome);
+    var fin=new THREE.Mesh(new THREE.SphereBufferGeometry(0.25,10,8),stoneLight);fin.position.y=5.55;g.add(fin);
+    [0,1,2].forEach(function(k){var sl=new THREE.Mesh(new THREE.BoxBufferGeometry(0.22,1.1,0.1),new THREE.MeshBasicMaterial({color:0x2a2018}));
+      var a=(k-1)*0.9;sl.position.set(Math.sin(a)*1.52,2.1,Math.cos(a)*1.52);sl.rotation.y=a;g.add(sl);});
+    g.position.set(s*11,7.4,-299.2);scene.add(g);
   });
 
-  onScroll();
+  /* bandera de Puerto Rico */
+  var pole=new THREE.Mesh(new THREE.CylinderBufferGeometry(0.07,0.07,8,8),new THREE.MeshLambertMaterial({color:0xf4f4f4}));
+  pole.position.set(15,11.4,-300.5);scene.add(pole);
+  var flagGeo=new THREE.PlaneBufferGeometry(3.6,2.4,24,12).translate(1.8,0,0);
+  var flagMat=new THREE.ShaderMaterial({
+    uniforms:U,side:THREE.DoubleSide,
+    vertexShader:[
+      'uniform float uTime;varying vec2 vF;varying float vD;varying float vSh;',
+      'void main(){vec3 p=position;vF=vec2(p.x,p.y+1.2);',
+      ' float a=p.x/3.6;float w=sin(p.x*1.7-uTime*5.0)*0.2*a+sin(p.x*3.1-uTime*7.0+p.y)*0.06*a;',
+      ' p.z+=w;p.y-=a*a*0.15;vSh=0.82+0.18*cos(p.x*1.7-uTime*5.0);',
+      ' vec4 mv=modelViewMatrix*vec4(p,1.0);vD=-mv.z;gl_Position=projectionMatrix*mv;}'].join('\n'),
+    fragmentShader:[
+      'uniform vec3 uFog;uniform float uNear;uniform float uFar;uniform vec3 uSunCol;varying vec2 vF;varying float vD;varying float vSh;',
+      'float sdStar5(vec2 p,float r,float rf){const vec2 k1=vec2(0.809016994375,-0.587785252292);const vec2 k2=vec2(-k1.x,k1.y);',
+      ' p.x=abs(p.x);p-=2.0*max(dot(k1,p),0.0)*k1;p-=2.0*max(dot(k2,p),0.0)*k2;p.x=abs(p.x);p.y-=r;',
+      ' vec2 ba=rf*vec2(-k1.y,k1.x)-vec2(0.0,1.0);float hh=clamp(dot(p,ba)/dot(ba,ba),0.0,r);',
+      ' return length(p-ba*hh)*sign(p.y*ba.x-p.x*ba.y);}',
+      'void main(){float i=floor(vF.y/0.48);',
+      ' vec3 col=mod(i,2.0)<0.5?vec3(0.89,0.15,0.18):vec3(0.97);',
+      ' if(vF.x<2.078*(1.0-abs(vF.y-1.2)/1.2)) col=vec3(0.16,0.38,0.79);',
+      ' if(sdStar5(vF-vec2(0.693,1.2),0.42,0.4)<0.0) col=vec3(0.98);',
+      ' col*=vSh*(vec3(0.75)+uSunCol*0.3);',
+      ' '+FOG_GLSL,
+      ' gl_FragColor=vec4(mix(col,uFog,fo),1.0);}'].join('\n')
+  });
+  var flag=new THREE.Mesh(flagGeo,flagMat);flag.position.set(15.05,14.15,-300.5);scene.add(flag);
+  [3,11,19,27,36,44].forEach(function(i){var r=rails[i];if(!r)return;var f=new THREE.Mesh(flagGeo,flagMat),sg=r[0]<0?1:-1;f.scale.set(0.38*sg,0.38,0.38);f.position.set(r[0],r[1]+0.9,r[2]);scene.add(f);});
+
+  /* la playa */
+  var SHORE=-302-0.65/0.0102;
+  var sandGeo=new THREE.PlaneBufferGeometry(900,160,1,80).rotateX(-Math.PI/2).translate(0,0,-382);
+  var sp=sandGeo.attributes.position,scol=new Float32Array(sp.count*3),dry=C('#ecd3a4'),wet=C('#b4946a'),tc=new THREE.Color();
+  for(var vi=0;vi<sp.count;vi++){
+    var z=sp.getZ(vi);sp.setY(vi,0.05-Math.max(0,-302-z)*0.0102);
+    var wf=THREE.MathUtils.smoothstep(z,SHORE+12,SHORE+2);
+    tc.copy(dry).lerp(wet,1-wf);
+    scol[vi*3]=tc.r;scol[vi*3+1]=tc.g;scol[vi*3+2]=tc.b;
+  }
+  sandGeo.setAttribute('color',new THREE.BufferAttribute(scol,3));sandGeo.computeVertexNormals();
+  scene.add(new THREE.Mesh(sandGeo,new THREE.MeshLambertMaterial({vertexColors:true,emissive:0x3d2c1c})));
+
+  var ocean=new THREE.Mesh(new THREE.PlaneBufferGeometry(2600,1200).rotateX(-Math.PI/2).translate(0,-0.6,-955),new THREE.ShaderMaterial({
+    uniforms:{uFog:U.uFog,uTime:U.uTime,uSunDir:U.uSunDir,uSunCol:U.uSunCol,uZen:U.uZen,uHor:U.uHor,uShore:{value:SHORE}},
+    vertexShader:'varying vec3 vW;varying float vD;void main(){vec4 w=modelMatrix*vec4(position,1.0);vW=w.xyz;vec4 mv=viewMatrix*w;vD=-mv.z;gl_Position=projectionMatrix*mv;}',
+    fragmentShader:[
+      'uniform vec3 uFog;uniform float uTime;uniform vec3 uSunDir;uniform vec3 uSunCol;uniform vec3 uZen;uniform vec3 uHor;uniform float uShore;float h2(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
+      'varying vec3 vW;varying float vD;',
+      'void main(){vec2 p=vW.xz;float t=uTime;',
+      ' float dx=cos(p.x*0.21+t*0.9)*0.06+cos(p.x*0.83+p.y*0.37+t*1.7)*0.035+cos(p.x*2.1-p.y*1.3+t*2.6)*0.02;',
+      ' float dz=cos(p.y*0.27+t*1.1)*0.07+cos(p.y*0.91-p.x*0.29+t*1.9)*0.035+cos(p.y*2.3+p.x*1.1+t*2.9)*0.02;',
+      ' vec3 n=normalize(vec3(-dx,1.0,-dz));',
+      ' vec3 V=normalize(cameraPosition-vW);',
+      ' float fres=pow(1.0-max(dot(n,V),0.0),4.0);',
+      ' float near=smoothstep(uShore-40.0,uShore,vW.z);',
+      ' vec3 water=mix(vec3(0.02,0.3,0.48),vec3(0.1,0.62,0.62),near);',
+      ' vec3 R=reflect(-V,n);',
+      ' vec3 refl=mix(uHor,uZen,pow(max(R.y,0.0),0.45));',
+      ' vec3 col=mix(water,refl,0.15+0.75*fres);',
+      ' float s=max(dot(R,uSunDir),0.0);',
+      ' col+=uSunCol*(pow(s,350.0)*5.0+pow(s,40.0)*0.35);',
+      ' col+=uSunCol*step(0.98,h2(floor(p*1.3)+floor(t*5.0)))*pow(s,5.0)*1.3;',
+      ' float fz=uShore-1.0+sin(t*0.8+p.x*0.05)*1.4+sin(t*0.45)*0.8;',
+      ' float foam=smoothstep(3.0,0.0,abs(vW.z-fz))*(0.55+0.45*sin(p.x*0.7+t*2.0));',
+      ' col=mix(col,vec3(0.97),clamp(foam,0.0,1.0)*0.85);',
+      ' float fo=smoothstep(120.0,900.0,vD);',
+      ' gl_FragColor=vec4(mix(col,uFog,fo),1.0);}'].join('\n')
+  }));
+  scene.add(ocean);
+
+  /* dos palmas */
+  function frondGeo(L,droop){
+    var N=16,v=[],c=[],idx=[],base=C('#2f5f22'),tip=C('#8bb33e'),cc=new THREE.Color();
+    for(var i=0;i<=N;i++){
+      var t=i/N,d=t*L,y=L*(0.42*t-droop*t*t);
+      var w=0.95*Math.sin(Math.PI*Math.min(t*1.12,1))*(i%2?1:0.45)+0.04;
+      v.push(d,y,-w, d,y+0.14*w,0, d,y,w);
+      cc.copy(base).lerp(tip,t*0.8);for(var k=0;k<3;k++)c.push(cc.r,cc.g,cc.b);
+      if(i<N){var a=i*3,b2=(i+1)*3;idx.push(a,a+1,b2, a+1,b2+1,b2, a+1,a+2,b2+1, a+2,b2+2,b2+1);}
+    }
+    var g=new THREE.BufferGeometry();
+    g.setAttribute('position',new THREE.Float32BufferAttribute(v,3));
+    g.setAttribute('color',new THREE.Float32BufferAttribute(c,3));
+    g.setIndex(idx);g.computeVertexNormals();return g;
+  }
+  var frondMat=new THREE.MeshLambertMaterial({vertexColors:true,side:THREE.DoubleSide});
+  var fronds=[frondGeo(4.4,0.75),frondGeo(5.0,0.85),frondGeo(3.8,0.6)];
+  var trunkMat=new THREE.MeshLambertMaterial({vertexColors:true});
+  function makePalm(sign){
+    var g=new THREE.Group();
+    var curve=new THREE.CatmullRomCurve3([new THREE.Vector3(0,0,0),new THREE.Vector3(sign*0.5,3,-0.2),new THREE.Vector3(sign*1.5,6.2,-0.5),new THREE.Vector3(sign*2.8,8.8,-0.7)]);
+    var TS=40,RS=10,tg=new THREE.TubeBufferGeometry(curve,TS,0.34,RS,false);
+    var tp=tg.attributes.position,tcol=new Float32Array(tp.count*3),cp=new THREE.Vector3(),pv=new THREE.Vector3();
+    for(var vi=0;vi<tp.count;vi++){
+      var i=Math.floor(vi/(RS+1)),t=i/TS;curve.getPointAt(t,cp);
+      pv.fromBufferAttribute(tp,vi).sub(cp).multiplyScalar(1-0.4*t).add(cp);tp.setXYZ(vi,pv.x,pv.y,pv.z);
+      var sh=(i%3===0)?0.62:1.0;tcol[vi*3]=0.44*sh;tcol[vi*3+1]=0.33*sh;tcol[vi*3+2]=0.22*sh;
+    }
+    tg.setAttribute('color',new THREE.BufferAttribute(tcol,3));tg.computeVertexNormals();
+    g.add(new THREE.Mesh(tg,trunkMat));
+    var top=curve.getPointAt(1);
+    for(var k=0;k<11;k++){
+      var f=new THREE.Mesh(fronds[k%3],frondMat);
+      f.position.copy(top);f.rotation.set(0,k/11*Math.PI*2+rnd()*0.35,0);f.rotateZ(-0.15+rnd()*0.45);
+      g.add(f);
+    }
+    for(var n=0;n<4;n++){var co=new THREE.Mesh(new THREE.SphereBufferGeometry(0.26,10,8),new THREE.MeshLambertMaterial({color:0x5b4a25}));
+      var a=n/4*Math.PI*2;co.position.set(top.x+Math.cos(a)*0.35,top.y-0.35,top.z+Math.sin(a)*0.35);g.add(co);}
+    return g;
+  }
+  var palmL=makePalm(-1),palmR=makePalm(1);
+  palmL.position.set(-6,-0.5,-356);palmR.position.set(6,-0.5,-356);scene.add(palmL);scene.add(palmR);
+
+  /* camera path: sobre los techos → la calle → la muralla → entre las palmas */
+  /* ---------- vida: gaviotas, nubes, sombrillas, chiringas, carro, el Volvo ---------- */
+  var BN=18,birdGeo=new THREE.BufferGeometry();
+  birdGeo.setAttribute('position',new THREE.Float32BufferAttribute([0,0,-0.5, 0,0,0.35, -1.5,0,0.1, 0,0,-0.5, 1.5,0,0.1, 0,0,0.35],3));
+  var bseed=new Float32Array(BN),birdP=[];
+  for(var bi=0;bi<BN;bi++){bseed[bi]=rnd()*6.28;var onB=bi<10;
+    birdP.push({cx:onB?(rnd()-.5)*30:(rnd()-.5)*10,cz:onB?-375-rnd()*40:-120-rnd()*150,r:8+rnd()*22,y:(onB?7:16)+rnd()*10,sp:(0.25+rnd()*0.35)*(rnd()<.5?-1:1),ph:rnd()*6.28,s:0.5+rnd()*0.4});}
+  birdGeo.setAttribute('aSeed',new THREE.InstancedBufferAttribute(bseed,1));
+  var birds=new THREE.InstancedMesh(birdGeo,new THREE.ShaderMaterial({uniforms:U,side:THREE.DoubleSide,
+    vertexShader:'uniform float uTime;attribute float aSeed;void main(){vec3 p=position;p.y+=abs(p.x)*sin(uTime*7.0+aSeed)*0.45;gl_Position=projectionMatrix*modelViewMatrix*instanceMatrix*vec4(p,1.0);}',
+    fragmentShader:'uniform vec3 uSunCol;void main(){gl_FragColor=vec4(vec3(0.92)*(vec3(0.6)+uSunCol*0.4),1.0);}'}),BN);
+  birds.frustumCulled=false;scene.add(birds);
+  function updBirds(t){for(var i=0;i<BN;i++){var b=birdP[i],a=b.ph+t*b.sp;
+    pos.set(b.cx+Math.cos(a)*b.r,b.y+gy(b.cz)+Math.sin(t*0.7+b.ph)*1.2,b.cz+Math.sin(a)*b.r*0.7);
+    qq.setFromEuler(eul.set(0,Math.atan2(b.sp*Math.sin(a),-b.sp*Math.cos(a)*0.7),0.3*(b.sp>0?-1:1)));
+    scl.setScalar(b.s);m.compose(pos,qq,scl);birds.setMatrixAt(i,m);}birds.instanceMatrix.needsUpdate=true;}
+
+  var cloudMat=new THREE.MeshLambertMaterial({color:0xffffff,emissive:0x8a8a8a,fog:false}),cSph=new THREE.SphereBufferGeometry(1,12,9),clouds=[];
+  var CL0=C('#ffffff'),CL1=C('#ffb08a'),CE0=C('#8a8a8a'),CE1=C('#5a3040');
+  function addCloud(x,y,z,sc){var g=new THREE.Group();
+    for(var i=0;i<6;i++){var mm=new THREE.Mesh(cSph,cloudMat);mm.position.set((rnd()-.5)*5,(rnd()-.5)*0.8,(rnd()-.5)*2.5);mm.scale.set(1.6+rnd()*1.6,0.8+rnd()*0.6,1.2+rnd());g.add(mm);}
+    g.position.set(x,y,z);g.scale.setScalar(sc);g.userData={x:x,sp:0.4+rnd()*0.8};scene.add(g);clouds.push(g);}
+  addCloud(-30,128+HILL,40,4);addCloud(32,104+HILL,5,3.4);addCloud(-20,78+HILL,-25,2.6);addCloud(28,150+HILL,62,4.5);
+  for(var ci=0;ci<8;ci++) addCloud((rnd()-.5)*1700,95+rnd()*130,-800-rnd()*400,14+rnd()*14);
+
+  var umbCols=['#e63946','#ffb703','#2a9d8f','#3a86ff','#ff6fb5','#8ac926','#fb8500','#9b5de5'],umbP=[];
+  for(var uz=-184;uz>-234;uz-=2.4)for(var ux=-2.7;ux<3;ux+=1.8)umbP.push([ux+(rnd()-.5)*0.3,gy(uz)+8.4+rnd()*0.5,uz]);
+  var umb=new THREE.InstancedMesh(new THREE.ConeBufferGeometry(0.95,0.42,10),new THREE.MeshLambertMaterial({color:0xffffff,side:THREE.DoubleSide}),umbP.length);
+  umbP.forEach(function(p,i){pos.set(p[0],p[1],p[2]);scl.set(1,1,1);m.compose(pos,q,scl);umb.setMatrixAt(i,m);if(umb.setColorAt)umb.setColorAt(i,C(umbCols[(rnd()*umbCols.length)|0]));});
+  scene.add(umb);
+
+  var kg=new THREE.BufferGeometry();kg.setAttribute('position',new THREE.Float32BufferAttribute([0,1.2,0,-0.8,0.2,0,0,-1,0,0.8,0.2,0],3));kg.setIndex([0,1,2,0,2,3]);
+  var kites=[];['#e63946','#ffb703','#3a86ff','#ff6fb5','#8ac926'].forEach(function(c,i){var g=new THREE.Group();
+    g.add(new THREE.Mesh(kg,new THREE.MeshBasicMaterial({color:c,side:THREE.DoubleSide,fog:false})));
+    g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,-1,0),new THREE.Vector3(0.35,-2.6,0),new THREE.Vector3(-0.25,-4.2,0)]),new THREE.LineBasicMaterial({color:c})));
+    g.userData={x:(i-2)*9+(rnd()-.5)*4,y:16+rnd()*9,z:-318-rnd()*20,ph:rnd()*6};scene.add(g);kites.push(g);});
+
+  var mcar=new THREE.Group();
+  [[0.22,0,1.7,0.44,3.5,0x0c0c0c],[0.72,0,1.8,0.7,4.3,0xc8102e],[1.32,0.25,1.6,0.56,2.3,0x18222c]].forEach(function(a){
+    var bx=new THREE.Mesh(unitBox,new THREE.MeshLambertMaterial({color:a[5]}));bx.position.set(0,a[0],a[1]);bx.scale.set(a[2],a[3],a[4]);mcar.add(bx);});
+  scene.add(mcar);
+  function updCar(t){var u=(t%16)/16,z=-75-u*212;mcar.position.set(1.75,gy(z),z);mcar.rotation.x=-Math.atan(gy(z+0.5)-gy(z-0.5));mcar.scale.setScalar(Math.min(1,u*20,(1-u)*20));}
+
+  /* el Volvo 244 DL marrón */
+  var volvo=new THREE.Group(),VB=new THREE.MeshLambertMaterial({color:0x6e4423,emissive:0x1c1008}),VG=new THREE.MeshLambertMaterial({color:0x141c22,emissive:0x0a0e12}),
+      VC=new THREE.MeshLambertMaterial({color:0xb9bcc0,emissive:0x222222}),VK=new THREE.MeshLambertMaterial({color:0x0d0d0d});
+  function vb(mat,w,h,d,x,y,z){var mm=new THREE.Mesh(unitBox,mat);mm.scale.set(w,h,d);mm.position.set(x,y,z);volvo.add(mm);}
+  vb(VB,1.7,0.5,4.8,0,0.62,0);vb(VG,1.5,0.44,2.5,0,1.09,0.2);vb(VB,1.54,0.07,2.56,0,1.345,0.2);
+  [-1,1].forEach(function(sx){[-1.03,0.2,1.43].forEach(function(pz){vb(VB,0.07,0.44,0.1,sx*0.75,1.09,pz);});
+    vb(new THREE.MeshBasicMaterial({color:0xff2a1a}),0.34,0.2,0.05,sx*0.62,0.68,2.41);
+    vb(new THREE.MeshBasicMaterial({color:0xfff2c0}),0.3,0.18,0.05,sx*0.6,0.68,-2.41);
+    [-1.5,1.5].forEach(function(wz){var w=new THREE.Mesh(new THREE.CylinderBufferGeometry(0.32,0.32,0.22,16),VK);w.rotation.z=Math.PI/2;w.position.set(sx*0.82,0.32,wz);volvo.add(w);
+      var hc=new THREE.Mesh(new THREE.CylinderBufferGeometry(0.17,0.17,0.25,12),VC);hc.rotation.z=Math.PI/2;hc.position.set(sx*0.82,0.32,wz);volvo.add(hc);});});
+  vb(VC,1.78,0.13,0.16,0,0.45,2.44);vb(VC,1.78,0.13,0.16,0,0.45,-2.44);vb(VK,0.7,0.18,0.04,0,0.68,-2.41);
+  vb(new THREE.MeshBasicMaterial({color:0xf2f2f2}),0.42,0.12,0.03,0,0.66,2.42);
+  /* laptop en el techo */
+  var lap=new THREE.Group(),lapM=new THREE.MeshLambertMaterial({color:0xc9ccd1,emissive:0x2a2a2a});
+  var lb=new THREE.Mesh(unitBox,lapM);lb.scale.set(0.5,0.022,0.34);lb.position.set(0,0.011,0.17);lap.add(lb);
+  var kb=new THREE.Mesh(unitBox,new THREE.MeshLambertMaterial({color:0x2a2c30}));kb.scale.set(0.42,0.004,0.17);kb.position.set(0,0.024,0.13);lap.add(kb);
+  var lid=new THREE.Group();lid.rotation.x=-0.32;lap.add(lid);
+  var ld=new THREE.Mesh(unitBox,lapM);ld.scale.set(0.5,0.33,0.014);ld.position.set(0,0.165,0);lid.add(ld);
+  var sc=document.createElement('canvas');sc.width=256;sc.height=160;var sx2=sc.getContext('2d');
+  sx2.fillStyle='#0d1117';sx2.fillRect(0,0,256,160);
+  ['#3fe0d0','#ff7a59','#e8eefc','#f7d26a','#8fb8ff'].forEach(function(c,i){for(var r=0;r<3;r++){var yy=12+(i*3+r)*9.5;if(yy>150)return;sx2.fillStyle=c;sx2.fillRect(12+((i+r)%3)*14,yy,40+((i*37+r*53)%120),4);}});
+  var scr=new THREE.Mesh(new THREE.PlaneBufferGeometry(0.46,0.29),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(sc),fog:false}));scr.position.set(0,0.165,0.008);lid.add(scr);
+  lap.scale.setScalar(1.8);lap.position.set(0,1.38,0.0);volvo.add(lap);
+  volvo.rotation.y=-0.45;scene.add(volvo);
+
+  /* ---------- más detalle: gente, veleros, bombillas, iglesia ---------- */
+  var PN2=12,pBody=new THREE.InstancedMesh(unitBox,new THREE.MeshLambertMaterial({color:0xffffff}),PN2),pLeg=new THREE.InstancedMesh(unitBox,new THREE.MeshLambertMaterial({color:0x2b2f3a}),PN2),
+      pHead=new THREE.InstancedMesh(new THREE.SphereBufferGeometry(0.17,8,6),new THREE.MeshLambertMaterial({color:0xffffff}),PN2),ppl=[];
+  var shirts=['#e63946','#f1faee','#ffb703','#2a9d8f','#3a86ff','#ff6fb5','#ffffff','#fb8500'],skins=['#8d5524','#c68642','#e0ac69','#f1c27d'];
+  for(var pi=0;pi<PN2;pi++){ppl.push({x:(pi%2?1:-1)*3.62,z:-95-rnd()*190,sp:(0.7+rnd()*0.6)*(rnd()<.5?-1:1),ph:rnd()*6});
+    if(pBody.setColorAt){pBody.setColorAt(pi,C(shirts[(rnd()*shirts.length)|0]));pHead.setColorAt(pi,C(skins[(rnd()*skins.length)|0]));}}
+  [pBody,pLeg,pHead].forEach(function(o){o.frustumCulled=false;scene.add(o);});
+  function updPeople(t){for(var i=0;i<PN2;i++){var a=ppl[i],d=((-(a.z+95)+t*a.sp)%190+190)%190,z=-95-d,y=gy(z)+0.14+Math.abs(Math.sin(t*6+a.ph))*0.05;
+      scl.set(0.36,0.62,0.24);pos.set(a.x,y+0.31,z);m.compose(pos,q,scl);pLeg.setMatrixAt(i,m);
+      scl.set(0.42,0.62,0.28);pos.set(a.x,y+0.93,z);m.compose(pos,q,scl);pBody.setMatrixAt(i,m);
+      scl.set(1,1,1);pos.set(a.x,y+1.42,z);m.compose(pos,q,scl);pHead.setMatrixAt(i,m);}
+    pBody.instanceMatrix.needsUpdate=pLeg.instanceMatrix.needsUpdate=pHead.instanceMatrix.needsUpdate=true;}
+
+  var boats=[],sailGeo=new THREE.BufferGeometry();
+  sailGeo.setAttribute('position',new THREE.Float32BufferAttribute([0,0.5,0,0,4.6,0,2.2,0.5,0, 0,0.8,0,0,4.0,0,-1.3,0.8,0],3));sailGeo.computeVertexNormals();
+  var boatMat=new THREE.MeshLambertMaterial({color:0xffffff,emissive:0x555555,side:THREE.DoubleSide,fog:false});
+  for(var bo=0;bo<7;bo++){var bg=new THREE.Group(),hull=new THREE.Mesh(unitBox,boatMat);hull.scale.set(3.4,0.5,1);hull.position.y=0.1;bg.add(hull);
+    var mast=new THREE.Mesh(unitBox,boatMat);mast.scale.set(0.07,4.6,0.07);mast.position.y=2.4;bg.add(mast);bg.add(new THREE.Mesh(sailGeo,boatMat));
+    bg.userData={x:(rnd()-.5)*420,z:-470-rnd()*300,ph:rnd()*6,sp:(rnd()-.5)*1.2};bg.scale.setScalar(1.6+rnd()*1.4);scene.add(bg);boats.push(bg);}
+
+  var bulbP=[];
+  for(var sz=-108;sz>-292;sz-=15){if(sz<-178&&sz>-240)continue;var sdir=(Math.round(sz/15)%2?1:-1);
+    for(var sk=0;sk<=14;sk++){var st=sk/14;bulbP.push([(-4+8*st)*sdir,gy(sz-4*st)+7.4-Math.sin(Math.PI*st)*0.9,sz-4*st]);}}
+  var bulbMat=new THREE.MeshBasicMaterial({color:0xfff0c8});
+  instanced(new THREE.SphereBufferGeometry(0.11,6,5),bulbMat,bulbP,1,1,1);
+
+  var chW=new THREE.MeshLambertMaterial({color:0xf3eee2}),chD=new THREE.MeshLambertMaterial({color:0xc46a4a}),ch=new THREE.Group();
+  function cb(mat,w,h,d,x,y,z){var mm=new THREE.Mesh(unitBox,mat);mm.scale.set(w,h,d);mm.position.set(x,y,z);ch.add(mm);}
+  cb(chW,14,20,24,0,10,0);cb(chW,4.6,31,4.6,-4.7,15.5,13);cb(chW,4.6,31,4.6,4.7,15.5,13);
+  [-4.7,4.7].forEach(function(x){var cn=new THREE.Mesh(new THREE.ConeBufferGeometry(3.4,4.5,4),chD);cn.rotation.y=Math.PI/4;cn.position.set(x,33.2,13);ch.add(cn);});
+  var drum=new THREE.Mesh(new THREE.CylinderBufferGeometry(4.5,4.5,3,18),chW);drum.position.set(0,21.5,-5);ch.add(drum);
+  var dome=new THREE.Mesh(new THREE.SphereBufferGeometry(4.6,18,10,0,Math.PI*2,0,Math.PI/2),chD);dome.position.set(0,23,-5);ch.add(dome);
+  cb(chW,0.25,2.4,0.25,0,28.7,-5);cb(chW,1.1,0.25,0.25,0,29.1,-5);
+  ch.position.set(-45,gy(-170)-2,-170);scene.add(ch);
+
+  var V3=function(x,y,z){return new THREE.Vector3(x,y,z);};
+  var camPath=new THREE.CatmullRomCurve3([V3(0,150,70),V3(5,95,10),V3(0,40,-45),V3(0,6,-100),V3(0,4.6,-170),V3(0,4.6,-240),V3(0,4.8,-300),V3(0,3.6,-330),V3(0,3.0,-342)]);
+  var lookPath=new THREE.CatmullRomCurve3([V3(0,0,-30),V3(0,0,-50),V3(0,10,-110),V3(0,5,-170),V3(0,5,-240),V3(0,5.5,-320),V3(0,5,-400),V3(0,4.2,-450),V3(0,4.2,-460)]);
+
+  var GATE=0.8;for(var gi=0;gi<=400;gi++){if(camPath.getPointAt(gi/400).z<-300){GATE=gi/400;break;}}
+  var vel=0,fx=null;
+  /* time of day: golden hour → sunset */
+  var ZEN0=C('#2a78d2'),ZEN1=C('#262f6b'),HOR0=C('#c4e6f8'),HOR1=C('#ff9058'),SUN0=C('#fff8ea'),SUN1=C('#ffa860');
+  function setTime(s){
+    U.uZen.value.copy(ZEN0).lerp(ZEN1,s);U.uHor.value.copy(HOR0).lerp(HOR1,s);U.uSunCol.value.copy(SUN0).lerp(SUN1,s);
+    var el=THREE.MathUtils.lerp(0.95,0.06,s),az=THREE.MathUtils.lerp(0.7,0,s);U.uSunDir.value.set(Math.sin(az)*Math.cos(el),Math.sin(el),-Math.cos(az)*Math.cos(el)).normalize();hillMat.color.copy(HILL0).lerp(HILL1,s);
+    U.uEvening.value=THREE.MathUtils.smoothstep(s,0.3,0.85);
+    U.uFog.value.copy(U.uHor.value).lerp(U.uZen.value,0.12);
+    scene.fog.color.copy(U.uFog.value);
+    hemi.color.copy(U.uZen.value).lerp(C('#ffffff'),0.5);hemi.intensity=0.75-0.2*s;
+    sunL.color.copy(U.uSunCol.value);sunL.position.copy(U.uSunDir.value).multiplyScalar(100);sunL.intensity=0.9-0.3*s;
+    U.uShadowL.value=Math.min(7.5,11*Math.sin(az)/Math.tan(el));var ev=THREE.MathUtils.smoothstep(s,0.3,0.85);bulbMat.color.setRGB(0.85+0.15*ev,0.8+0.05*ev,0.62-0.2*ev);
+    cloudMat.color.copy(CL0).lerp(CL1,s);cloudMat.emissive.copy(CE0).lerp(CE1,s);
+    var lb=0.8+0.9*U.uEvening.value;lampMat.color.setRGB(lb,lb*0.78,lb*0.5);
+  }
+
+  /* bloom (optional) */
+  var composer=null,bloom=null,cpr=1;
+  if(THREE.EffectComposer&&THREE.UnrealBloomPass){
+    try{
+      var msRT=null;
+      if(renderer.capabilities.isWebGL2&&THREE.WebGLMultisampleRenderTarget){cpr=renderer.getPixelRatio();
+        msRT=new THREE.WebGLMultisampleRenderTarget(innerWidth*cpr,innerHeight*cpr,{format:THREE.RGBAFormat});msRT.samples=4;}
+      composer=msRT?new THREE.EffectComposer(renderer,msRT):new THREE.EffectComposer(renderer);
+      composer.addPass(new THREE.RenderPass(scene,camera));
+      bloom=new THREE.UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight),0.45,0.5,0.85);
+      composer.addPass(bloom);
+      if(THREE.ShaderPass){
+        fx=new THREE.ShaderPass({uniforms:{tDiffuse:{value:null},uVel:{value:0},uFlash:{value:0},uTime:{value:0},uWarp:{value:0}},
+          vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',
+          fragmentShader:[
+            'uniform sampler2D tDiffuse;uniform float uFlash;uniform float uWarp;varying vec2 vUv;',
+            'void main(){vec2 c=vUv-0.5;float r2=dot(c,c);float k=uWarp*0.45;',
+            ' vec3 col=texture2D(tDiffuse,0.5+c*(1.0+k*r2)/(1.0+k*0.5)).rgb;',
+            ' float l=dot(col,vec3(0.299,0.587,0.114));col=clamp(mix(vec3(l),col,1.2),0.0,1.0);',
+            ' col=mix(col,col*col*(3.0-2.0*col),0.3);',
+            ' gl_FragColor=vec4(col+uFlash,1.0);}'].join('\n')});
+        composer.addPass(fx);
+      }
+    }catch(e){composer=null;}
+  }
+  function resize(){
+    camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth,innerHeight);
+    if(composer) composer.setSize(innerWidth*cpr,innerHeight*cpr);
+    var px=THREE.MathUtils.clamp(5.0*camera.aspect,2.7,6.5);
+    palmL.position.x=-px;palmR.position.x=px;
+    var vz=camera.aspect<1?-358:-352;volvo.position.set(camera.aspect<1?0.3:3.0,0.05-(-302-vz)*0.0102,vz);
+  }
+  addEventListener('resize',resize);resize();
+
+  var root=document.documentElement.style;
+  var accA=C('#3fe0d0'),accB=C('#ff7a59'),acc=new THREE.Color();
+  var clk=new THREE.Clock(),tmpP=new THREE.Vector3(),tmpL=new THREE.Vector3(),lastAcc='';
+
+  function frame(){
+    var t=clk.getElapsedTime();
+    prog+=(progTarget-prog)*(RM?1:0.06);
+    mouse.x+=(mouse.tx-mouse.x)*0.05;mouse.y+=(mouse.ty-mouse.y)*0.05;
+    var p=Math.min(0.9999,prog);
+    camPath.getPointAt(p,tmpP);lookPath.getPointAt(p,tmpL);tmpP.y+=gy(tmpP.z);tmpL.y+=gy(tmpL.z);
+    var street=THREE.MathUtils.smoothstep(p,0.2,0.3);
+    camera.position.copy(tmpP);
+    camera.position.x+=mouse.x*(4-2.8*street);camera.position.y+=-mouse.y*(2-1.4*street)+Math.sin(t*0.6)*0.12;
+    camera.lookAt(tmpL);
+    var vraw=progTarget-prog;vel+=(Math.min(1,Math.abs(vraw)*14)-vel)*0.12;
+    var intro=RM?0:(introT<0?1:Math.max(0,1-(performance.now()-introT)/2600));intro=intro*intro*(3-2*intro);
+    var warp=(p>0.08&&p<0.32)?Math.sin((p-0.08)/0.24*Math.PI):0;
+    camera.position.y+=intro*90;
+    camera.rotateZ(Math.sin(t*0.25)*0.01+mouse.x*-0.03+(1-THREE.MathUtils.smootherstep(p,0,0.3))*2.6+(1-street)*t*0.02+intro*1.4);
+    camera.fov=60+vel*5+warp*8+intro*20;camera.updateProjectionMatrix();
+    sky.position.copy(camera.position);
+
+    var s=THREE.MathUtils.smoothstep(p,0.5,0.97);
+    if(bloom) bloom.strength=0.12+0.4*s;
+    setTime(s);U.uTime.value=t;
+    U.uNear.value=150+(1-street)*60;U.uFar.value=620+(1-street)*100;scene.fog.near=U.uNear.value;scene.fog.far=U.uFar.value;
+
+    acc.copy(accA).lerp(accB,THREE.MathUtils.smoothstep(p,0.55,0.9));
+    var hex='#'+acc.getHexString();
+    if(hex!==lastAcc){
+      lastAcc=hex;root.setProperty('--accent',hex);
+      root.setProperty('--accent-rgb',Math.round(acc.r*255)+','+Math.round(acc.g*255)+','+Math.round(acc.b*255));
+    }
+    progbar.style.width=(prog*100).toFixed(1)+'%';
+    depthEl.textContent=Math.max(0,Math.round((1-prog)*1200))+' M';
+    if(fx){fx.uniforms.uVel.value=vel;fx.uniforms.uWarp.value=warp*0.5+intro;fx.uniforms.uTime.value=t;
+      fx.uniforms.uFlash.value=Math.exp(-Math.pow((p-GATE)/0.014,2))*0.4+intro*intro*0.9;}
+    updBirds(t);updCar(t);updPeople(t);
+    boats.forEach(function(g){var u=g.userData;g.position.set(u.x+t*u.sp,-0.55+Math.sin(t*1.1+u.ph)*0.12,u.z);g.rotation.z=Math.sin(t*0.9+u.ph)*0.06;});
+    clouds.forEach(function(g){g.position.x=g.userData.x+t*g.userData.sp;});
+    kites.forEach(function(g){var u=g.userData;g.position.set(u.x+Math.sin(t*0.6+u.ph)*2,u.y+Math.sin(t*0.9+u.ph)*1.2,u.z);g.rotation.z=Math.sin(t*0.8+u.ph)*0.3;});
+    palmL.rotation.z=Math.sin(t*0.8)*0.025;palmR.rotation.z=Math.sin(t*0.7+1)*0.025;palmL.rotation.x=palmR.rotation.x=Math.sin(t*0.5)*0.015;
+    document.body.classList.toggle('end',prog>0.96);
+
+    if(composer) composer.render(); else renderer.render(scene,camera);
+    requestAnimationFrame(frame);
+  }
+  setTime(0);
+  camera.position.copy(camPath.getPointAt(0));camera.lookAt(lookPath.getPointAt(0));sky.position.copy(camera.position);
+  if(composer) composer.render(); else renderer.render(scene,camera);
+  ready=true;
+  requestAnimationFrame(frame);
 })();
 </script>
 </body>
